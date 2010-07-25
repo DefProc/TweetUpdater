@@ -4,6 +4,21 @@ Version: 2.11
 Author: Ingo "Ingoal" Hildebrandt, Jordan Trask "@comm", Patrick Fenner
 Author URI: http://www.geektank.net/twitter-updater/
 
+TODO for v.3.0
+
+- Add OAuth authentication for twitter, needs 3 steps:
+  - Input username. Get request token from twitter.
+  - Send user to Twitter and have them ok TweetUpdater to use their account
+    - I think they have to go manually, because Twitter will only return to one 
+	place per set of consumer keys. 
+  - Swap request token for access token
+All tokens will need storing in the wp database with the other returned fields.
+I suggest these will need doing from the manager page.
+
+- Set the updater code to use the OAuth credentials
+
+- Check compatability with WP 3.0 (works with 2.9.2)
+
 Edited by
 Patrick Fenner (22nd July 2010) - http://www.deferredprocrastination.co.uk (v2.11)
 - Added support for la_petite_url plugin
