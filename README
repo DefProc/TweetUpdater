@@ -1,8 +1,14 @@
 Plugin Name: TwitterUpdater
 Description: WordPress plugin to update Twitter status when you create or publish a post.
-Version: 2.10
-Author: Ingo "Ingoal" Hildebrandt, edited by Jordan Trask "@comm"
+Version: 2.11
+Author: Ingo "Ingoal" Hildebrandt, Jordan Trask "@comm", Patrick Fenner
 Author URI: http://www.geektank.net/twitter-updater/
+
+Edited by
+Patrick Fenner (22nd July 2010) - http://www.deferredprocrastination.co.uk (v2.11)
+- Added support for la_petite_url plugin
+- Add #url# placeholder instead of "Link title to blog?" checkbox
+- Added option to use full WordPress permalink as url
 
 Edited by
 Jordan Trask "@comm" (April 19th 2010) - http://geektank.net (v2.10)

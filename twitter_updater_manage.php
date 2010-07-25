@@ -3,12 +3,10 @@
 	//SETS DEFAULT OPTIONS
 	if(get_option('twitterInitialised') != '1'){
 		update_option('newpost-published-update', '1');
-		update_option('newpost-published-text', 'Published a new post: #title#');
-		update_option('newpost-published-showlink', '1');
+		update_option('newpost-published-text', 'Published a new post: #title# @#url#');
 
 		update_option('oldpost-edited-update', '1');
-		update_option('oldpost-edited-text', 'Fiddling with my blog post: #title#');
-		update_option('oldpost-edited-showlink', '1');
+		update_option('oldpost-edited-text', 'Fiddling with my blog post: #title# @#url#');
 		update_option('short-method', '0');
 		update_option('url-method', '2');
                 update_option('tu_bitly_username', '');
@@ -58,6 +56,13 @@
         }
 
 ?>
+<?php $vc_placeholders = "<br />
+			Placeholders:
+			<ul>
+			<li>#title# - Replaced by page title</li>
+			<li>#url# - Replaced by URL as selected below</li>
+			</ul>"; 
+?>
 <style type="text/css">
 	fieldset{margin:20px 0; 
 	border:1px solid #cecece;
@@ -76,12 +81,9 @@
 				<label for="newpost-published-update">Update Twitter when the new post is published</label>
 			</p>
 			<p>
-				<label for="newpost-published-text">Text for this Twitter update ( use #title# as placeholder for page title )</label><br />
+				<label for="newpost-published-text">Text for this Twitter update</label><br />
 				<input type="text" name="newpost-published-text" id="newpost-published-text" size="60" maxlength="146" value="<?php echo(get_option('newpost-published-text')) ?>" />
-				&nbsp;&nbsp;
-				<input type="checkbox" name="newpost-published-showlink" id="newpost-published-showlink" value="1" <?php vc_checkCheckbox('newpost-published-showlink')?> />
-				<label for="newpost-published-showlink">Link title to blog?</label>
-			</p>
+			<?php echo $vc_placeholders; ?>
 		</fieldset>
 		
 		<fieldset>
@@ -91,11 +93,9 @@
 				<label for="oldpost-edited-update">Update Twitter when the an old post has been edited</label>
 			</p>
 			<p>
-				<label for="oldpost-edited-text">Text for this Twitter update ( use #title# as placeholder for page title )</label><br />
+				<label for="oldpost-edited-text">Text for this Twitter update</label><br />
 				<input type="text" name="oldpost-edited-text" id="oldpost-edited-text" size="60" maxlength="146" value="<?php echo(get_option('oldpost-edited-text')) ?>" />
-				&nbsp;&nbsp;
-				<input type="checkbox" name="oldpost-edited-showlink" id="oldpost-edited-showlink" value="1" <?php vc_checkCheckbox('oldpost-edited-showlink')?> />
-				<label for="oldpost-edited-showlink">Link title to blog?</label>
+			<?php echo $vc_placeholders; ?>
 			</p>
 		</fieldset>
 
@@ -126,6 +126,17 @@
                                 <label for="tu_bitly_appkey">App Key</label>
                                 <input type="text" name="tu_bitly_appkey" id="tu_bitly_appkey" value="<?php echo get_option('tu_bitly_appkey')?>" />                        	
                         </p>
+                        <?php if(function_exists('get_la_petite_url_permalink')) { // If activated, allow selection of la_petite_url plugin as the shortener ?>
+			<p>
+                                <input type="radio" name="url-method" id="url-method" value="4" <?php vc_checkRadio('url-method','4') ?> />
+				<label for="url-method">le_petite_url</label>
+			</p>
+                  <?php } ?>
+			<p>
+                                <input type="radio" name="url-method" id="url-method" value="5" <?php vc_checkRadio('url-method','5') ?> />
+				<label for="url-method">Full WordPress permalink (Warning: length is not checked)</label>
+			</p>
+
                 </fieldset>
 
 

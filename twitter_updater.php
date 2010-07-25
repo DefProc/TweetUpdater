@@ -1,14 +1,11 @@
 <?php
 /*
-Plugin Name: Twitter updater
-Plugin URI: http://www.twitterupdater.com
-Description: Updates Twitter when you create a new blog or publish one
-Version: 2.10
-Author: Ingo "Ingoal" Hildebrandt, edited by Jordan Trask "@comm"
+Plugin Name: TwitterUpdater
+Description: WordPress plugin to update Twitter status when you create or publish a post.
+Version: 2.11
+Author: Ingo "Ingoal" Hildebrandt, Jordan Trask "@comm", Patrick Fenner
 Author URI: http://www.geektank.net/twitter-updater/
-Based on Version 1.0
-Victoria Chan
-http://blog.victoriac.net/?p=87
+Based on Version 1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
 
 */
 
@@ -46,7 +43,7 @@ function vc_doTwitterAPIPost($twit, $twitterURI) {
 }
 
 function vc_twit($post_ID)  {
-   $twitterURI = "/statuses/update.xml?source=ingoalstwitterupdate";
+   $twitterURI = "/statuses/update.xml?source=web";
    $getthisposttitle = get_post($post_ID);	// edited by Marco Luthe
    $thisposttitle = $getthisposttitle->post_title; // edited by Marco Luthe
    $thispostlink = get_permalink($post_ID);
@@ -67,11 +64,9 @@ function vc_twit($post_ID)  {
 			// publish new post
 			if(get_option('newpost-published-update') == '1'){
                                 $sentence = get_option('newpost-published-text');
-				if(get_option('newpost-published-showlink') == '1'){
-		                        $tinyurl = get_tinyurl(get_option('short-method'),get_option('url-method'),$thispostlink);
-		                        $thisposttitle = $thisposttitle . ' @' . $tinyurl;		
-				}
+	                        $tinyurl = get_tinyurl(get_option('short-method'),get_option('url-method'),$thispostlink,$post_ID);
 				$sentence = str_replace ( '#title#', $thisposttitle, $sentence);
+				$sentence = str_replace ( '#url#', $tinyurl, $sentence);
 			}
 		}
 	} else if ($_POST['original_post_status'] == 'publish') {  // edited by Eric Lee - 'prev_status' now 'original_post_status' in 2.7
@@ -86,11 +81,9 @@ function vc_twit($post_ID)  {
 				}
 			}
 
-			if(get_option('oldpost-edited-showlink') == '1') {
-				$tinyurl = get_tinyurl(get_option('short-method'),get_option('url-method'),$thispostlink);
-	                        $thisposttitle = $thisposttitle . ' @' . $tinyurl;
-			}
+			$tinyurl = get_tinyurl(get_option('short-method'),get_option('url-method'),$thispostlink,$post_ID);
 			$sentence = str_replace ( '#title#', $thisposttitle, $sentence);
+			$sentence = str_replace ( '#url#', $tinyurl, $sentence);
 		}
 	} else {}
       
@@ -110,7 +103,7 @@ function vc_twit($post_ID)  {
 // copied from vc_twit and  adjusted to have a function that works with the future_to_publish hook
 // added by Marco Luthe
 function vc_twit2($post_ID)  {
-   $twitterURI = "/statuses/update.xml?source=ingoalstwitterupdate";
+   $twitterURI = "/statuses/update.xml?source=web";
    $getthisposttitle = get_post($post_ID);	// edited by Marco Luthe
    $thisposttitle = $getthisposttitle->post_title;	//edited by Marco Luthe
    $thispostlink = get_permalink($post_ID);
@@ -118,11 +111,9 @@ function vc_twit2($post_ID)  {
  
 	if(get_option('newpost-published-update') == '1'){
 		$sentence = get_option('newpost-published-text');
-		if(get_option('newpost-published-showlink') == '1'){
-                        $tinyurl = get_tinyurl(get_option('short-method'),get_option('url-method'),$thispostlink);
-            		$thisposttitle = $thisposttitle . ' @' . $tinyurl;
-		}
+                $tinyurl = get_tinyurl(get_option('short-method'),get_option('url-method'),$thispostlink,$post_ID);
 		$sentence = str_replace ( '#title#', $thisposttitle, $sentence);
+		$sentence = str_replace ( '#url#', $tinyurl, $sentence);
 	}
 
 	if($sentence != ""){
@@ -134,7 +125,7 @@ function vc_twit2($post_ID)  {
 }
 
 
-function get_tinyurl($shortmethod,$urlmethod,$link) {
+function get_tinyurl($shortmethod,$urlmethod,$link,$post_ID) {
       update_option('tu_last',$link);
       if ($urlmethod == '1') { 
               $url = "http://zz.gd/api-create.php?url=".$link;
@@ -159,6 +150,23 @@ function get_tinyurl($shortmethod,$urlmethod,$link) {
               } else {
                       $turl = make_bitly_url($url,get_option('tu_bitly_username'),get_option('tu_bitly_appkey'),'0');
               }
+      }
+      else if ($urlmethod == '4') { // Added support for la_petite_url shortener plugin
+              if(function_exists('get_la_petite_url_permalink')) {
+                      $turl = get_la_petite_url_permalink($post_ID); // return short link from la_petite_url
+              } else {
+                      // Don't want things to fail completely if la_petite_url gets deactivated, so reset to default and continue
+                      update_option('url-method', '2');
+                      $url = "http://tinyurl.com/api-create.php?url=".$link;
+                      if ($shortmethod == '1') {
+                             $turl = file_get_contents_curl($url);
+                      } else {      
+                             $turl = file_get_contents($url);
+                      }
+              }
+      }
+      else if ($urlmethod == '5') { // Added selection of full permalink
+              $turl = get_permalink($post_ID); 
       }
       return($turl);
 }
@@ -206,4 +214,3 @@ function vc_Twitter_manage_page() {
 add_action('publish_post', 'vc_twit',1,1);	// should be fired only if a post is actually published/edited, but not just saved - edited by Marco Luthe
 add_action('future_to_publish', 'vc_twit2',1,1);	// should be fired only if a future post is actually published - edited by Marco Luthe
 add_action('admin_menu', 'vc_addTwitterAdminPages');
-?>
