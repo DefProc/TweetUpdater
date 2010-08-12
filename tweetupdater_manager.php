@@ -95,111 +95,100 @@ function tweet_updater_options_page()
 
 	<h2>Twitter Authorisation</h2>
 	<fieldset>
-	TweetUpdater uses OAuth authentication to connect to Twitter. <br/>
-	Basic Authentication (username and password) access for applicationss was discontinued by Twitter in August 2010.<br />
-	Follow the authentication process to allow tweets to be sent by your account.<br />
-	<form action="options.php" method="post">
-	<?php settings_fields('tweet_updater_auth'); 
-	
-	// Logic to display the correct form, depending on authorisation stage
-	if( $tokens['auth1_flag'] != '1' )
-	{
-		update_option('tweet_updater_auth', $tokens);
-		do_settings_sections('auth_1'); 
-		?><input name="Submit" type="submit" value="<?php esc_attr_e('Register'); ?>" /><?php
-		echo "<div class='warning'>TweetUpdater does not have access to a twitter account yet.</div>";
-	} 
-	elseif( $tokens['auth1_flag'] == '1' && $tokens['auth2_flag'] != '1' )
-	{
-		// Check if using default consumer keys
-		if( $tokens['default_consumer_keys'] == "1" )
-		{
-			global $tweet_updater_default_consumer_key, $tweet_updater_default_consumer_secret; 
-			$tokens['consumer_key'] = $tweet_updater_default_consumer_key;
-			$tokens['consumer_secret'] = $tweet_updater_default_consumer_secret;
-		}
+		TweetUpdater uses OAuth authentication to connect to Twitter. <br/>
+		Basic Authentication (username and password) access for applicationss was discontinued by Twitter in August 2010.<br />
+		Follow the authentication process to allow tweets to be sent by your account.<br />
+		<form action="options.php" method="post">
+<?php 		settings_fields('tweet_updater_auth'); 
 		
-		//do registration and generate the register link
-		$tokens = tweet_updater_register($tokens);
-		update_option('tweet_updater_auth', $tokens);
-	
-		do_settings_sections('auth_2'); 
-		?><input name="Submit" type="submit" value="<?php esc_attr_e('Authorise'); ?>" /><?php
-	} 
-	else
-	{
-		if ( $tokens['auth2_flag'] == '1' && $tokens['auth3_flag'] != '1' )
+		// Logic to display the correct form, depending on authorisation stage
+		if( $tokens['auth1_flag'] != '1' )
 		{
-		//do authorisation
-			$tokens = tweet_updater_authorise($tokens);
-		}
+			update_option('tweet_updater_auth', $tokens);
+			do_settings_sections('auth_1'); 
+?>			<input name="Submit" type="submit" value="<?php esc_attr_e('Register'); ?>" />
+			<div class="warning">TweetUpdater does not have access to a twitter account yet.</div>
+<?php		} 
+		elseif( $tokens['auth1_flag'] == '1' && $tokens['auth2_flag'] != '1' )
+		{
+			// Check if using default consumer keys
+			if( $tokens['default_consumer_keys'] == "1" )
+			{
+				global $tweet_updater_default_consumer_key, $tweet_updater_default_consumer_secret; 
+				$tokens['consumer_key'] = $tweet_updater_default_consumer_key;
+				$tokens['consumer_secret'] = $tweet_updater_default_consumer_secret;
+			}
+			
+			//do registration and generate the register link
+			$tokens = tweet_updater_register($tokens);
+			update_option('tweet_updater_auth', $tokens);
 		
-		//do validation
-		$verify = tweet_updater_verify($tokens);
-		switch ($verify['exit_code']) 
-		{
-		case '1':
-			echo "<div class='ok'><strong>Connection checked OK<br />TweetUpdater is authorised to use <a href='http://twitter.com/{$verify['user_name']}'>@{$verify['user_name']}</a></strong></div>";
-			$tokens['auth3_flag'] = '1'; //Will only validate until reset
-			update_option('tweet_updater_auth', $tokens);
-			?><input name="Submit" type="submit" value="<?php esc_attr_e('Check again'); ?>" /><?php 
-			break;
-		case '2':
-			echo "<div class='warning'>Not able to validate access to account, Twitter is currently unavailable. Try checking again in a couple of minutes.</div>";
-			$tokens['auth3_flag'] = '1'; //Will validate next time
-			update_option('tweet_updater_auth', $tokens);
-			?><input name="Submit" type="submit" value="<?php esc_attr_e('Check again'); ?>" /><?php
-			break;
-		case '3':
-			echo "<div class='warning'>TweetUpdater does not have access to a twitter account yet.</div>";
-			$tokens['auth3_flag'] = '0';
-			update_option('tweet_updater_auth', $tokens);
 			do_settings_sections('auth_2'); 
-			?><input name="Submit" type="submit" value="<?php esc_attr_e('Authorise'); ?>" /><?php
-			break;
-		default:
-			echo "<div class='warning'>TweetUpdater is not currently authorised to use any account. Please reset and try again.</div>";
-			update_option('tweet_updater_auth', $tokens);
-		}
-	} 
-	?></form>
+?>			<input name="Submit" type="submit" value="<?php esc_attr_e('Authorise'); ?>" />
+<?php		} 
+		else
+		{
+			if ( $tokens['auth2_flag'] == '1' && $tokens['auth3_flag'] != '1' )
+			{
+			//do authorisation
+				$tokens = tweet_updater_authorise($tokens);
+			}
+			
+			//do validation
+			$verify = tweet_updater_verify($tokens);
+			switch ($verify['exit_code']) 
+			{
+			case '1':
+				echo "<div class='ok'><strong>Connection checked OK<br />TweetUpdater is authorised to use <a href='http://twitter.com/{$verify['user_name']}'>@{$verify['user_name']}</a></strong></div>";
+				$tokens['auth3_flag'] = '1'; //Will only validate until reset
+				update_option('tweet_updater_auth', $tokens);
+?>				<input name="Submit" type="submit" value="<?php esc_attr_e('Check again'); ?>" />
+<?php 				break;
+			case '2':
+				echo "<div class='warning'>Not able to validate access to account, Twitter is currently unavailable. Try checking again in a couple of minutes.</div>";
+				$tokens['auth3_flag'] = '1'; //Will validate next time
+				update_option('tweet_updater_auth', $tokens);
+?>				<input name="Submit" type="submit" value="<?php esc_attr_e('Check again'); ?>" />
+<?php				break;
+			case '3':
+				echo "<div class='warning'>TweetUpdater does not have access to a twitter account yet.</div>";
+				$tokens['auth3_flag'] = '0';
+				update_option('tweet_updater_auth', $tokens);
+				do_settings_sections('auth_2'); 
+?>				<input name="Submit" type="submit" value="<?php esc_attr_e('Authorise'); ?>" />
+<?php				break;
+			default:
+				echo "<div class='warning'>TweetUpdater is not currently authorised to use any account. Please reset and try again.</div>";
+				update_option('tweet_updater_auth', $tokens);
+			}
+		} 
+?>
+		</form>
 	
-	<?php
-	// Button to reset OAuth process
-	?>
-	<form action="options.php" method="post">
-	<?php settings_fields('tweet_updater_auth'); ?>
-	<h3>Or reset Twitter authenication proceedure:</h3><input name="Submit" type="submit" value="<?php esc_attr_e('Reset'); ?>" />
-	<div class="hid">	
-	<?php do_settings_sections('auth_reset'); // the hidden fields populate a padded table that has to be hidden by css. Feels like bit of a hack really.?>
-	</div>
-	
-	</form>
-	</div>
+<?php	// Button to reset OAuth process ?>
+		<form action="options.php" method="post">
+		<?php settings_fields('tweet_updater_auth'); ?>
+		<h3>Or restart the authorisation procedure:</h3>
+			<div class="hid">	
+				<?php do_settings_sections('auth_reset'); // the hidden fields populate a padded table that has to be hidden by css. Feels like bit of a hack really.?>
+			</div>
+			<input name="Submit" type="submit" value="<?php esc_attr_e('Reset'); ?>" />
+		</form>
+		</div>
 	</fieldset>
 
-	<?php
-	// TweetUpdater Options form
-	?>
+<?php	// TweetUpdater Options form ?>
 	<div>
 	<h2>TweetUpdater Options</h2>
 	<form action="options.php" method="post">
-	<fieldset>
-	<?php settings_fields('tweet_updater_options'); ?>
-	<fieldset>
-		<?php do_settings_sections('new_post'); ?>
-	</fieldset>
-	<fieldset>
-		<?php do_settings_sections('edited_post'); ?>
-	</fieldset>
-	<fieldset>
-		<?php do_settings_sections('short_url'); ?>
-	</fieldset>
-	<fieldset>
-		<?php do_settings_sections('url_method'); ?>
-	</fieldset>
-	<input name="Submit" type="submit" value="<?php esc_attr_e('Save Options'); ?>" />
-	</fieldset>
+		<fieldset>
+			<?php settings_fields('tweet_updater_options'); ?>
+			<fieldset><?php do_settings_sections('new_post'); ?></fieldset>
+			<fieldset><?php do_settings_sections('edited_post'); ?></fieldset>
+			<fieldset><?php do_settings_sections('short_url'); ?></fieldset>
+			<fieldset><?php do_settings_sections('url_method'); ?></fieldset>
+			<input name="Submit" type="submit" value="<?php esc_attr_e('Save Options'); ?>" />
+		</fieldset>
 	</form>
 	</div>
 	
