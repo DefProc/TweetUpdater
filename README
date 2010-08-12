@@ -1,23 +1,25 @@
 Plugin Name: TwitterUpdater
 Description: WordPress plugin to update Twitter status when you create or publish a post.
-Version: 2.11
+Version: 3.x.alpha1
 Author: Ingo "Ingoal" Hildebrandt, Jordan Trask "@comm", Patrick Fenner
 Author URI: http://www.geektank.net/twitter-updater/
 
 TODO for v.3.0
-
-- Add OAuth authentication for twitter, needs 3 steps:
-  - Input username. Get request token from twitter.
-  - Send user to Twitter and have them ok TweetUpdater to use their account
-    - I think they have to go manually, because Twitter will only return to one 
-	place per set of consumer keys. 
-  - Swap request token for access token
-All tokens will need storing in the wp database with the other returned fields.
-I suggest these will need doing from the manager page.
-
-- Set the updater code to use the OAuth credentials
-
 - Check compatability with WP 3.0 (works with 2.9.2)
+- Test...
+
+Version 3.x.alpha1:
+
+- Added OAuth authentication for twitter, uses 3 steps:
+  1 Set Consumer keys (or use default)
+  2 - Get request token from twitter.
+    - Send user to Twitter and have them ok TweetUpdater to use their account
+    - The user has to return manually, because Twitter will only return to one 
+      place per set of consumer keys. 
+  3 Swap request token for access token
+All tokens are stored in an array in a single entry in wp-options.
+
+- Set the updater code to tweet using the OAuth credentials
 
 Edited by
 Patrick Fenner (22nd July 2010) - http://www.deferredprocrastination.co.uk (v2.11)
