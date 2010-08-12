@@ -2,7 +2,7 @@
 /*
 Plugin Name: TweetUpdater
 Description: WordPress plugin to update Twitter status when you create or publish a post.
-Version: 3.x
+Version: 3.x.alpha1
 Author: Patrick Fenner, Jordan Trask "@comm"
 Author URI: http://def-proc.co.uk/Projects/TweetUpdater
 Based on TwitterUpdater, version 1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
@@ -11,6 +11,8 @@ Based on TwitterUpdater, version 1.0 by Victoria Chan: http://blog.victoriac.net
 
 require_once('twitteroauth.php');
 require_once('tweetupdater_manager.php');
+
+
 
 
 
@@ -42,8 +44,9 @@ function vc_tweet_publish($post_ID)
 		// or if it's a published and updated
 		else if ($_POST['original_post_status'] == 'publish' && $options['edited_update'] == '1') 
 		{  
-			// Fix for scheduled posts (thanks uniqueculture)
+			// Fix for scheduled posts (from uniqueculture)
 			if (strlen(trim($title)) == 0) { $this_post = get_post($post_ID); if ($this_post) { $title = $this_post->post_title; } }
+			//I've not figured out what this fixes yet, maybe sometimes post_title is not set when get_post() is first called? - [DefProc]
 
 			// Format the message
 			$tweet = tweet_updater_format_tweet( $options['edited_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
@@ -60,7 +63,7 @@ function vc_tweet_publish($post_ID)
 
 
 
-/* Plugin action on future_to_publish (when publishing time arrives for a scheduled post) */
+/* Plugin action on future_to_publish (when a scheduled post gets published) */
 
 function vc_tweet_future($post_ID)  
 {
@@ -87,100 +90,149 @@ function vc_tweet_future($post_ID)
 }
 
 
+
+
+
 	/*** Additional Functions ***/
 
 
 /* Single function to output a formatted tweet */
 
-function tweet_updater_format_tweet( $format, $title, $link, $post_ID, $use_curl, $url_method )
+function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $use_curl, $url_method )
 {
 	//initialise tweet
-	$tweet = $format;
+	$tweet = $tweet_format;
 	
 	//retieve the short url
-	$tinyurl = get_tinyurl($use_curl,$url_method,$link,$post_ID);
+	$short_url = get_tinyurl($use_curl,$url_method,$link,$post_ID);
+
+	// Error handling: If plugin is deacitvated, repeat to use default link supplier
+	if( $short_url['error'] == 'repeat1' ) 
+	{ 
+		$short_url = get_tinyurl($use_curl,$short_url['url_method'],$link,$post_ID); 
+	}
+
+	// Additional error handing is possible: returning $tweet = ''; will cause sending to be aborted.
 
 	//do the placeholder string replace
 	$tweet = str_replace ( '#title#', $title, $tweet);
-	$tweet = str_replace ( '#url#', $tinyurl, $tweet);
+	$tweet = str_replace ( '#url#', $short_url, $tweet);
 	
 	return $tweet;
 }
 
-//get_tinyurl()
-/*
-function get_tinyurl($shortmethod,$urlmethod,$link,$post_ID) {
-      update_option('tu_last',$link);
-      if ($urlmethod == '1') { 
-              $url = "http://zz.gd/api-create.php?url=".$link;
-              if ($shortmethod == '1') {
-                      $turl = file_get_contents_curl($url);
-              } else {
-                      $turl = file_get_contents($url);            
-              }
-      }
-      else if ($urlmethod == '2') {
-              $url = "http://tinyurl.com/api-create.php?url=".$link;
-              if ($shortmethod == '1') {
-                      $turl = file_get_contents_curl($url);
-              } else {      
-                      $turl = file_get_contents($url);
-              }
-      }
-      else if ($urlmethod == '3') {
-              $url = $link;
-              if ($shortmethod == '1') {
-                      $turl = make_bitly_url($url,get_option('tu_bitly_username'),get_option('tu_bitly_appkey'),'1');
-              } else {
-                      $turl = make_bitly_url($url,get_option('tu_bitly_username'),get_option('tu_bitly_appkey'),'0');
-              }
-      }
-      else if ($urlmethod == '4') { // Added support for la_petite_url shortener plugin
-              if(function_exists('get_la_petite_url_permalink')) {
-                      $turl = get_la_petite_url_permalink($post_ID); // return short link from la_petite_url
-              } else {
-                      // Don't want things to fail completely if la_petite_url gets deactivated, so reset to default and continue
-                      update_option('url-method', '2');
-                      $url = "http://tinyurl.com/api-create.php?url=".$link;
-                      if ($shortmethod == '1') {
-                             $turl = file_get_contents_curl($url);
-                      } else {      
-                             $turl = file_get_contents($url);
-                      }
-              }
-      }
-      else if ($urlmethod == '5') { // Added selection of full permalink
-              $turl = get_permalink($post_ID); 
-      }
-      return($turl);
+/* Get the selected short url */
+
+function get_tinyurl( $use_curl, $url_method, $link, $post_ID ) 
+{
+	if ( $url_method == 'zzgd' ) 
+	{ 
+		$target_url = "http://zz.gd/api-create.php?url=" . $link;
+		if ( $use_curl == '1' ) 
+		{ 
+			$short_url = file_get_contents_curl($target); 
+		} 
+		else 
+		{ 
+			$short_url = file_get_contents($target); 
+		}
+	}
+	else if ( $url_method == 'tinyurl' ) 
+	{
+		$target = "http://tinyurl.com/api-create.php?url=" . $link;
+		if ( $use_curl == '1' ) 
+		{
+			$short_url = file_get_contents_curl($target);
+		} 
+		else 
+		{      
+			$short_url = file_get_contents($target);
+		}
+	}
+	else if ( $url_method == 'bitly' ) 
+	{
+		$options = get_option('tweet_updater_options');
+		$short_url = tu_make_bitly_url($link,$options['bitly_username'],$options['bitly_appkey'],$use_curl);
+	}
+	else if ( $url_method == 'petite' ) 
+	{
+		if(function_exists('get_la_petite_url_permalink')) 
+		{
+			// return short link from la_petite_url plugin function
+			$short_url = get_la_petite_url_permalink($post_ID); 
+		} 
+		else 
+		{
+			// Don't want things to fail completely if la_petite_url gets deactivated, so:
+			
+			// reset to default	
+	//		$options = get_option('tweet_updater_options'); 
+	//		$option['url_method'] = 'tinyurl';
+	//		update_option( 'tweet_updater_options', $options ); 
+			
+		/* Should we reset to default? It could be a temporary problem, and the error handling loop would deal with it */
+			
+			// send error message
+			$short_url = array( 
+				'error_message' => 'repeat1', 
+				'url_method' => 'tinyurl',
+						);
+		}
+	}
+	else if ( $url_method == 'permalink' ) 
+	{
+		$short_url = $link; 
+	}
+
+	return $short_url;
 }
-*/
-//make_bitly_url()
-/*
-function make_bitly_url($url,$login,$appkey,$curl) {
-      $bitly = 'http://api.bit.ly/v3/shorten?login='.$login.'&apiKey='.$appkey.'&format=json&history=1&longUrl='.urlencode($url);
-      //get the url
-      if ($curl == '1') { $response = file_get_contents_curl($bitly); }
-      else { $response = file_get_contents($bitly); }
+
+
+/* get a bit.ly url */
+
+function tu_make_bitly_url($link,$login,$appkey,$use_curl) 
+{
+	$bitly = 'http://api.bit.ly/v3/shorten?login='.$login.'&apiKey='.$appkey.'&format=json&history=1&longUrl='.urlencode($link);
+
+	//get the url
+	if ($use_curl == '1') 
+	{ 
+		$response = file_get_contents_curl($bitly); 
+	}
+	else 
+	{ 
+		$response = file_get_contents($bitly); 
+	}
+
+	$json = @json_decode($response,true);
+	$short_url = $json['data']['url'];
 	
-      $json = @json_decode($response,true);
-      $shorturl = $json['data']['url'];
-      return $shorturl;
+	return $short_url;
 }
-*/
-//file_get_contents_curl()
-/*
-function file_get_contents_curl($url) {
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HEADER, 0);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_URL, $url);
-      $data = curl_exec($ch);
-      curl_close($ch);
-      return $data;
+
+
+
+/* alternative funtion to file_get_contents(), using curl */
+
+function file_get_contents_curl($target_url) 
+{
+	$ch = curl_init();
+	
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_URL, $target_url);
+	
+	$data = curl_exec($ch);
+
+	curl_close($ch);
+
+	return $data;
 }
-*/
-//
+
+
+
+
+
 
 
 	/*** Twitter OAuth Functions ***/
@@ -287,6 +339,8 @@ function tweet_updater_update_status($tweet)
 
 
 
+
+
 	/*** WordPress Hooks ***/
 
 
@@ -294,12 +348,13 @@ function tweet_updater_update_status($tweet)
 	add_action( 'publish_post', 'vc_tweet_publish', 1, 1 );
 
 /* Action for when a future post is published */
-//	add_action( 'future_to_publish', 'vc_twit_future', 1, 1 );
+	add_action( 'future_to_publish', 'vc_tweet_future', 1, 1 );
 
 /* Add the admin options page */
 	add_action( 'admin_menu', 'tweet_updater_admin_add_page' );
 
 /* Intialise on first activation */
 	register_activation_hook( __FILE__, 'tweet_updater_activate' );
+
 
 ?>
