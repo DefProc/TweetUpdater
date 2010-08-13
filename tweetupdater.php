@@ -107,7 +107,7 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 	$short_url = get_tinyurl($use_curl,$url_method,$link,$post_ID);
 
 	// Error handling: If plugin is deacitvated, repeat to use default link supplier
-	if( $short_url['error'] == 'repeat1' ) 
+	if( $short_url['error_code'] == '1' ) 
 	{ 
 		$short_url = get_tinyurl($use_curl,$short_url['url_method'],$link,$post_ID); 
 	}
@@ -130,23 +130,23 @@ function get_tinyurl( $use_curl, $url_method, $link, $post_ID )
 		$target_url = "http://zz.gd/api-create.php?url=" . $link;
 		if ( $use_curl == '1' ) 
 		{ 
-			$short_url = file_get_contents_curl($target); 
+			$short_url = file_get_contents_curl($target_url); 
 		} 
 		else 
 		{ 
-			$short_url = file_get_contents($target); 
+			$short_url = file_get_contents($target_url); 
 		}
 	}
 	else if ( $url_method == 'tinyurl' ) 
 	{
-		$target = "http://tinyurl.com/api-create.php?url=" . $link;
+		$target_url = "http://tinyurl.com/api-create.php?url=" . $link;
 		if ( $use_curl == '1' ) 
 		{
-			$short_url = file_get_contents_curl($target);
+			$short_url = file_get_contents_curl($target_url);
 		} 
 		else 
 		{      
-			$short_url = file_get_contents($target);
+			$short_url = file_get_contents($target_url);
 		}
 	}
 	else if ( $url_method == 'bitly' ) 
@@ -174,7 +174,8 @@ function get_tinyurl( $use_curl, $url_method, $link, $post_ID )
 			
 			// send error message
 			$short_url = array( 
-				'error_message' => 'repeat1', 
+				'error_code' => '1',
+				'error_message' => 'Fuction deactivated. Repeat with another method.', 
 				'url_method' => 'tinyurl',
 						);
 		}
@@ -206,6 +207,9 @@ function tu_make_bitly_url($link,$login,$appkey,$use_curl)
 
 	$json = @json_decode($response,true);
 	$short_url = $json['data']['url'];
+	
+	//error handling hook
+	$status = array( 'status_code' => $json['status_test'], 'status_txt' => $json['status_txt'] );
 	
 	return $short_url;
 }

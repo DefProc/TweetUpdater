@@ -81,23 +81,20 @@ function tweet_updater_options_page()
 ?>
 	<style type="text/css">
 		div.hid		{ visibility: hidden; overflow: hidden; height: 1px; }
-		div.ok		{ margin: 20px 0; border: 1px solid green; padding: 15px; color: green; }
-		div.warning	{ margin: 20px; border: 1px solid red; padding: 20px; color: red; }
 		fieldset	{ margin: 20px 0; border: 1px solid #cecece; padding: 15px; }
 	</style>
 <?php	
 	//Twitter Authorisation form
 ?>
-	<h1>TweetUpdater</h1>
-	<p>TweetUpdater can send tweets to a linked twitter account, when a post is published or updated.</p>
-
-	<div>
-
-	<h2>Twitter Authorisation</h2>
-	<fieldset>
-		TweetUpdater uses OAuth authentication to connect to Twitter. <br/>
-		Basic Authentication (username and password) access for applicationss was discontinued by Twitter in August 2010.<br />
-		Follow the authentication process to allow tweets to be sent by your account.<br />
+	<div class="wrap">
+	<div id="icon-options-general" class="icon32"><br></div>
+	<h2>TweetUpdater</h2>
+	<div class="clear"></div>
+		<hr>
+		<h2>Twitter Account</h2>
+ 
+		TweetUpdater uses OAuth authentication to connect to Twitter (basic authenitication is denied for applications).<br/>
+		Follow the authentication process below to authorise TweetUpdater access on your Twitter account.<br />
 		<form action="options.php" method="post">
 <?php 		settings_fields('tweet_updater_auth'); 
 		
@@ -106,8 +103,8 @@ function tweet_updater_options_page()
 		{
 			update_option('tweet_updater_auth', $tokens);
 			do_settings_sections('auth_1'); 
-?>			<input name="Submit" type="submit" value="<?php esc_attr_e('Register'); ?>" />
-			<div class="warning">TweetUpdater does not have access to a twitter account yet.</div>
+?>			<div class="error"><p><strong>TweetUpdater does not have access to a Twitter account yet.</strong></p></div>
+			<p class="submit" ><input name="Submit" class="button-primary"  type="submit" value="<?php esc_attr_e('Register'); ?>" /></p>
 <?php		} 
 		elseif( $tokens['auth1_flag'] == '1' && $tokens['auth2_flag'] != '1' )
 		{
@@ -124,7 +121,7 @@ function tweet_updater_options_page()
 			update_option('tweet_updater_auth', $tokens);
 		
 			do_settings_sections('auth_2'); 
-?>			<input name="Submit" type="submit" value="<?php esc_attr_e('Authorise'); ?>" />
+?>			<p class="submit" ><input name="Submit" class="button-primary"  type="submit" value="<?php esc_attr_e('Authorise'); ?>" /></p>
 <?php		} 
 		else
 		{
@@ -139,57 +136,51 @@ function tweet_updater_options_page()
 			switch ($verify['exit_code']) 
 			{
 			case '1':
-				echo "<div class='ok'><strong>Connection checked OK<br />TweetUpdater is authorised to use <a href='http://twitter.com/{$verify['user_name']}'>@{$verify['user_name']}</a></strong></div>";
+				echo "<div class='message updated'><p><strong>Connection checked OK. TweetUpdater can post to <a href='http://twitter.com/{$verify['user_name']}'>@{$verify['user_name']}</a></strong></p></div>";
 				$tokens['auth3_flag'] = '1'; //Will only validate until reset
 				update_option('tweet_updater_auth', $tokens);
-?>				<input name="Submit" type="submit" value="<?php esc_attr_e('Check again'); ?>" />
+?>				<p class="submit" ><input name="Refresh" class="button-primary"  type="button" value="<?php esc_attr_e('Check again'); ?>" onClick="history.go(0)" /></p>
 <?php 				break;
 			case '2':
-				echo "<div class='warning'>Not able to validate access to account, Twitter is currently unavailable. Try checking again in a couple of minutes.</div>";
+				echo "<div class='error'><p><strong>Not able to validate access to account, Twitter is currently unavailable. Try checking again in a couple of minutes.</strong></p></div>";
 				$tokens['auth3_flag'] = '1'; //Will validate next time
 				update_option('tweet_updater_auth', $tokens);
-?>				<input name="Submit" type="submit" value="<?php esc_attr_e('Check again'); ?>" />
+?>				<p class="submit" ><input name="Refresh" class="button-primary"  type="button" value="<?php esc_attr_e('Check again'); ?>" onClick="history.go(0)" /></p>
 <?php				break;
 			case '3':
-				echo "<div class='warning'>TweetUpdater does not have access to a twitter account yet.</div>";
+				echo "<div class='error'><p><strong>TweetUpdater does not have access to a Twitter account yet.</strong></p></div>";
 				$tokens['auth3_flag'] = '0';
 				update_option('tweet_updater_auth', $tokens);
 				do_settings_sections('auth_2'); 
-?>				<input name="Submit" type="submit" value="<?php esc_attr_e('Authorise'); ?>" />
+?>				<p class="submit" ><input name="Submit" class="button-primary"  type="submit" value="<?php esc_attr_e('Authorise'); ?>" /></p>
 <?php				break;
 			default:
-				echo "<div class='warning'>TweetUpdater is not currently authorised to use any account. Please reset and try again.</div>";
+				echo "<div class='warning'>TweetUpdater is not currently authorised to use any account. Please reset and try again.</strong></p></div>";
 				update_option('tweet_updater_auth', $tokens);
 			}
 		} 
 ?>
 		</form>
-	
 <?php	// Button to reset OAuth process ?>
 		<form action="options.php" method="post">
 		<?php settings_fields('tweet_updater_auth'); ?>
-		<h3>Or restart the authorisation procedure:</h3>
+		<p><strong>Or restart the authorisation procedure: </strong> <span class="_submit" ><input name="Submit" class="button-secondary"  type="submit" value="<?php esc_attr_e('Reset'); ?>" /></span></p>
 			<div class="hid">	
 				<?php do_settings_sections('auth_reset'); // the hidden fields populate a padded table that has to be hidden by css. Feels like bit of a hack really.?>
 			</div>
-			<input name="Submit" type="submit" value="<?php esc_attr_e('Reset'); ?>" />
+			
 		</form>
-		</div>
-	</fieldset>
-
+		<hr>
 <?php	// TweetUpdater Options form ?>
-	<div>
-	<h2>TweetUpdater Options</h2>
-	<form action="options.php" method="post">
-		<fieldset>
+		<h2>Options</h2>
+		<form action="options.php" method="post">
 			<?php settings_fields('tweet_updater_options'); ?>
-			<fieldset><?php do_settings_sections('new_post'); ?></fieldset>
-			<fieldset><?php do_settings_sections('edited_post'); ?></fieldset>
-			<fieldset><?php do_settings_sections('short_url'); ?></fieldset>
+			<?php do_settings_sections('new_post'); ?> 
+			<?php do_settings_sections('edited_post'); ?> 
+			<?php do_settings_sections('short_url'); ?> 
 			<fieldset><?php do_settings_sections('url_method'); ?></fieldset>
-			<input name="Submit" type="submit" value="<?php esc_attr_e('Save Options'); ?>" />
-		</fieldset>
-	</form>
+			<p class="submit" ><input name="Submit" class="button-primary"  type="submit" value="<?php esc_attr_e('Save Options'); ?>" />
+		</form>
 	</div>
 	
 
@@ -215,18 +206,18 @@ function tweet_updater_admin_init()
 register_setting( 'tweet_updater_auth', 'tweet_updater_auth', 'tweet_updater_auth_validate' );
 
 	// Consumer Key fields
-	add_settings_section('tweet_updater_consumer_keys', 'Consumer Keys', 'tweet_updater_auth_1', 'auth_1');
+	add_settings_section('tweet_updater_consumer_keys', 'Consumer Keys:', 'tweet_updater_auth_1', 'auth_1');
 		add_settings_field('tweet_updater_consumer_key', 'Consumer Key', 'tweet_updater_consumer_key', 'auth_1', 'tweet_updater_consumer_keys');
 		add_settings_field('tweet_updater_consumer_secret', 'Consumer Secret', 'tweet_updater_consumer_secret', 'auth_1', 'tweet_updater_consumer_keys');
 		add_settings_field('tweet_updater_consumer_default', 'Use Default Consumer Keys?', 'tweet_updater_consumer_default', 'auth_1', 'tweet_updater_consumer_keys');
 		add_settings_field('tweet_updater_auth1_flag', '', 'tweet_updater_auth1_flag', 'auth_1', 'tweet_updater_consumer_keys');
 
 	// Register Keys switch
-	add_settings_section('tweet_updater_register_keys', 'Register with Twitter', 'tweet_updater_auth_2', 'auth_2');
+	add_settings_section('tweet_updater_register_keys', 'Register with Twitter:', 'tweet_updater_auth_2', 'auth_2');
 		add_settings_field('tweet_updater_auth2_flag', '', 'tweet_updater_auth2_flag', 'auth_2', 'tweet_updater_register_keys');
 
 	// Reset button fields
-	add_settings_section('tweet_updater_reset', 'Reset OAuth', 'tweet_updater_reset', 'auth_reset');
+	add_settings_section('tweet_updater_reset', 'Reset OAuth:', 'tweet_updater_reset', 'auth_reset');
 		add_settings_field('tweet_updater_auth1_reset', '', 'tweet_updater_auth1_reset', 'auth_reset', 'tweet_updater_reset');
 		add_settings_field('tweet_updater_auth2_reset', '', 'tweet_updater_auth2_reset', 'auth_reset', 'tweet_updater_reset');
 		add_settings_field('tweet_updater_auth3_reset', '', 'tweet_updater_auth3_reset', 'auth_reset', 'tweet_updater_reset');
@@ -240,43 +231,43 @@ register_setting( 'tweet_updater_auth', 'tweet_updater_auth', 'tweet_updater_aut
 register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updater_options_validate' );
 		
 	//Section 1: New Post published
-	add_settings_section('tweet_updater_new_post', 'Newly Published Post', 'tweet_updater_new_post', 'new_post');
+	add_settings_section('tweet_updater_new_post', 'Newly Published Post:', 'tweet_updater_new_post', 'new_post');
 		add_settings_field('tweet_updater_newpost_update', 'Update Twitter when a new post is published?', 'tweet_updater_newpost_update', 'new_post', 'tweet_updater_new_post');
 		add_settings_field('tweet_updater_newpost_format', 'Tweet format for a new post:', 'tweet_updater_newpost_format', 'new_post', 'tweet_updater_new_post');
 			
 	//Section 2: Updated Post
-	add_settings_section('tweet_updater_edited_post', 'Published Post Updated', 'tweet_updater_edited_post', 'edited_post');
+	add_settings_section('tweet_updater_edited_post', 'Published Post Updated:', 'tweet_updater_edited_post', 'edited_post');
 		add_settings_field('tweet_updater_edited_update', 'Update Twitter when a published post is updated?', 'tweet_updater_edited_update', 'edited_post', 'tweet_updater_edited_post');
 		add_settings_field('tweet_updater_edited_format', 'Tweet format for an updated post:', 'tweet_updater_edited_format', 'edited_post', 'tweet_updater_edited_post');
 
 	//Section 3: Short Url service
-	add_settings_section('tweet_updater_short_url', 'Short URL Service', 'tweet_updater_short_url', 'short_url');
+	add_settings_section('tweet_updater_short_url', 'Short URL Service:', 'tweet_updater_short_url', 'short_url');
 		add_settings_field('tweet_updater_chose_url', 'Use a #url# from which provider?', 'tweet_updater_chose_url1', 'short_url', 'tweet_updater_short_url');
 		add_settings_field('tweet_updater_bitly_username', 'Bit.ly Username', 'tweet_updater_bitly_username', 'short_url', 'tweet_updater_short_url');
 		add_settings_field('tweet_updater_bitly_appkey', 'Bit.ly Appkey', 'tweet_updater_bitly_appkey', 'short_url', 'tweet_updater_short_url');
 
 	//Section 4: Use CURL to get short_url?
 	add_settings_section('tweet_updater_url_method', 'Use CURL to get external short_urls?', 'tweet_updater_url_method', 'url_method');
-		add_settings_field('tweet_updater_use_curl', 'Check to use CURL instead of get_file_contents()', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
+		add_settings_field('tweet_updater_use_curl', 'Use curl for short URLs?', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
 	}
 
 /* Return Form components for the Allowed Form Fields */
 
 // Consumer Keys form
 function tweet_updater_auth_1() 
-	{ echo '<p>Set your Twitter API Consumer Keys here. <br />If you prefer not to use the default TweetUpdater API keys, you can add your own keys here instead. You can get twitter API keys by registering a new application at <a href="http://twitter.com/apps">http://twitter.com/apps</a><br />This plugin is not yet authenticated with Twitter</p>'; }
+	{ echo '<p>Set your Twitter API Consumer Keys here. <br />If you prefer not to use the default TweetUpdater API keys, you can add your own keys here instead. <br />Get consumer keys by registering a new application at <a href="http://twitter.com/apps">http://twitter.com/apps</a>.</p>'; }
 function tweet_updater_consumer_key() 
-	{ $tokens = get_option('tweet_updater_auth'); echo "<input id='tweet_updater_consumer_key' type='text' name='tweet_updater_auth[consumer_key]' value='{$tokens['consumer_key']}' />"; }
+	{ $tokens = get_option('tweet_updater_auth'); echo "<input id='tweet_updater_consumer_key' type='text' size='60' name='tweet_updater_auth[consumer_key]' value='{$tokens['consumer_key']}' />"; }
 function tweet_updater_consumer_secret() 
-	{ $tokens = get_option('tweet_updater_auth'); echo "<input id='tweet_updater_consumer_secret' type='text' name='tweet_updater_auth[consumer_secret]' value='{$tokens['consumer_secret']}' />"; }
+	{ $tokens = get_option('tweet_updater_auth'); echo "<input id='tweet_updater_consumer_secret' type='text' size='60' name='tweet_updater_auth[consumer_secret]' value='{$tokens['consumer_secret']}' />"; }
 function tweet_updater_consumer_default() 
-	{ $tokens = get_option('tweet_updater_auth'); echo "<input id='tweet_updater_consumer_default' type='checkbox' name='tweet_updater_auth[default_consumer_keys]' value='1' checked='{$tokens['default_consumer_keys']}' />"; }
+	{ $tokens = get_option('tweet_updater_auth'); echo "<input id='tweet_updater_consumer_default' type='checkbox' name='tweet_updater_auth[default_consumer_keys]' value='1' checked='true' />"; }
 function tweet_updater_auth1_flag() 
 	{ echo "<input id='tweet_updater_auth1_flag' type='hidden' name='tweet_updater_auth[auth1_flag]' value='1' />"; }
 
 // Request link form
 function tweet_updater_auth_2() 
-	{ $tokens = get_option('tweet_updater_auth'); echo "<p>Now you need to tell twitter you want to allow TweetUpdater to be able to post to your account. <br />Follow the instructions at <a href='{$tokens['request_link']}'>{$tokens['request_link']}</a> and come back to this page to complete the process.</p>"; }
+	{ $tokens = get_option('tweet_updater_auth'); echo "<p>Now you need to tell Twitter you want to allow TweetUpdater to be able to post using your account. <ol><li>Go to: <a href='{$tokens['request_link']}'>{$tokens['request_link']}</a></li><li>Follow the instructions at page to Allow access for TweetUpdater</li><li>Return to this page to complete the process.</li></ol></p>"; }
 function tweet_updater_auth2_flag() 
 		{ echo "<input id='tweet_updater_auth2_flag' type='hidden' name='tweet_updater_auth[auth2_flag]' value='1' />"; }
 
@@ -351,7 +342,7 @@ function tweet_updater_chose_url1()
 	// Full length WordPress Permalink
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='permalink'";
 	if( $options['url_method'] == 'permalink' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>WordPress Permalink [Warning: Number of characters is not checked by TweetUpdater]</label></li>";
+	echo " /><label for='tweet_updater_chose_url'>WordPress Permalink (Warning: the number of characters is not checked by TweetUpdater)</label></li>";
 
 	echo "</ul>";
 }
@@ -365,7 +356,7 @@ function tweet_updater_bitly_appkey()
 function tweet_updater_url_method()
 	{ echo "<p>Version 2.05 added an option to use CURL to create and retrieve external short urls instead of file_get_contents(). <br />Curl is required for the TwitterOAuth library, but the previous version of TwitterUpdater recommended _not_ using it's curl function. <br />I've left the option for testing. [DefProc]</p>"; }
 function tweet_updater_use_curl()
-	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " />"; }
+	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " /><label>Some web hosts disable the get_page_contents() function. In this case, check the box to use php-curl instead."; }
 
 
 /* Form validaton functions */
@@ -403,8 +394,8 @@ function tweet_updater_options_validate($input)
 	if( $input['edited_format'] != NULL ) { $options['edited_format'] = $input['edited_format']; }
 	if( $input['use_curl'] != NULL ) { $options['use_curl'] = $input['use_curl']; } else { $options['use_curl'] = '0'; }
 	if( $input['url_method'] != NULL ) { $options['url_method'] = $input['url_method']; }
-	if( $input['bitly_username'] != NULL ) { $options['bitly_username'] = $input['bitly_username']; }
-	if( $input['bitly_appkey'] != NULL ) { $options['bitly_appkey'] = $input['bitly_appkey']; }
+	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = $input['bitly_username']; }
+	if( isset( $input['bitly_appkey'] ) ) { $options['bitly_appkey'] = $input['bitly_appkey']; }
 	
 	return $options;
 }
