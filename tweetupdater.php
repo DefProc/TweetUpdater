@@ -2,8 +2,8 @@
 /*
 Plugin Name: TweetUpdater
 Description: WordPress plugin to update Twitter status when you create or publish a post.
-Version: 3.x.alpha1
-Author: Patrick Fenner, Jordan Trask "@comm"
+Version: 3.x.beta1
+Author: Patrick Fenner (Deferred Procrastination)
 Author URI: http://def-proc.co.uk/Projects/TweetUpdater
 Based on TwitterUpdater, version 1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
 
@@ -104,12 +104,12 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 	$tweet = $tweet_format;
 	
 	//retieve the short url
-	$short_url = get_tinyurl($use_curl,$url_method,$link,$post_ID);
+	$short_url = tu_get_shorturl($use_curl,$url_method,$link,$post_ID);
 
 	// Error handling: If plugin is deacitvated, repeat to use default link supplier
 	if( $short_url['error_code'] == '1' ) 
 	{ 
-		$short_url = get_tinyurl($use_curl,$short_url['url_method'],$link,$post_ID); 
+		$short_url = tu_get_shorturl($use_curl,$short_url['url_method'],$link,$post_ID); 
 	}
 
 	// Additional error handing is possible: returning $tweet = ''; will cause sending to be aborted.
@@ -123,7 +123,7 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 
 /* Get the selected short url */
 
-function get_tinyurl( $use_curl, $url_method, $link, $post_ID ) 
+function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID ) 
 {
 	if ( $url_method == 'zzgd' ) 
 	{ 

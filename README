@@ -1,8 +1,7 @@
 Plugin Name: TwitterUpdater
 Description: WordPress plugin to update Twitter status when you create or publish a post.
-Version: 3.x.alpha1
+Version: 3.x.beta1
 Author: Ingo "Ingoal" Hildebrandt, Jordan Trask "@comm", Patrick Fenner
-Author URI: http://www.geektank.net/twitter-updater/
 
 TODO for v.3.0
 - Check compatability with WP 3.0 (works with 2.9.2)
@@ -20,74 +19,3 @@ Version 3.x.alpha1:
 All tokens are stored in an array in a single entry in wp-options.
 
 - Set the updater code to tweet using the OAuth credentials
-
-Edited by
-Patrick Fenner (22nd July 2010) - http://www.deferredprocrastination.co.uk (v2.11)
-- Added support for la_petite_url plugin
-- Add #url# placeholder instead of "Link title to blog?" checkbox
-- Added option to use full WordPress permalink as url
-
-Edited by
-Jordan Trask "@comm" (April 19th 2010) - http://geektank.net (v2.10)
-- Added support for Bit.ly
-
-Edited by
-Jordan Trask "@comm" (April 17th 2010) - http://geektank.net (v2.09)
-- ZZ.gd broke with 403 forbidden error, fixed with setting different user agent.
-- Move menu to "Settings".
-- Added option under configuration to choose ZZ.gd or TinyURL. Added 1 function.
-- Re-worked the code for url shortening services, change in one place instead of three. Created a function instead.
-  which makes it easier to add more services if necessary. Bit.ly support in the future?
-
-Edited by 
-Eric Austin Lee (January 9th 2009) - http://www.ericaustinlee.com /(v2.08)
-Edit: corrected to fit new needs of Wordpress 2.7
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.07.1)
-Edit: - corrected tinyurl-api-url...
-
-Edited by
-Marco Luthe (October 17th. 2008) - http://www.saphod.net (v2.07)
-- Changed "save_post" hook to "publish_post"
-- Added "future_to_publish" hook and vc_twit2
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.06)
-Edit: - added cascading short-url generation (if zz.gd is down, it'll cascade to tinyurl.com)
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.05)
-Edit: - added alternative method to get shorturl (using curl instead of fopen)
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.04)
-http://www.ingoal.info/archives/2008/07/08/twitter-updater/
-Edit: - fixed character escaping in post-title ( ' and & ) 
-      - fixed empty post-title when scheduled post appears
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.03)
-http://www.ingoal.info/archives/2008/07/08/twitter-updater/
-Edit: - fixed the multi-tweet issue in WP2.6 (due to post revisions the same post was twittered multiple times before)
-      - streamlined the options...only new posts and edited old-posts from now on out...
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.02)
-http://www.ingoal.info/archives/2008/07/08/twitter-updater/
-Edit: added twitter source parameter to replace "from web"
-
-Edited by
-Ingo "Ingoal" Hildebrandt (v2.01)
-http://www.ingoal.info/archives/2008/07/08/twitter-updater/
-Edit: replaced tinyurl-support with zz.gd-support even shorter short-url
-
-Edited by 
-Jonathan Dingman (v2.0)
-http://www.firesidemedia.net/dev/software/wordpress/twitter-updater/
-Edit: added tinyurl-support
-
-Based on Version 1.0 TwitterUpdater
-Victoria Chan
-http://blog.victoriac.net/?p=87
-
