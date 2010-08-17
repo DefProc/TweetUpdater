@@ -44,7 +44,7 @@ function tweet_updater_activate()
 		'newpost_format' => 'New blog post: #title#: #url#',
 		'edited_update' => '1',
 		'edited_format' => 'Updated blog post: #title#: #url#',
-		'use_curl' => '0',
+		'use_curl' => '1',
 		'url_method' => 'tinyurl',
                 'bitly_username' => '',
                 'bitly_appkey' => '',
@@ -64,7 +64,7 @@ function tweet_updater_activate()
 
 function tweet_updater_admin_add_page() 
 {
-	add_options_page( 'TweetUpdater', 'TweetUpdater Options', 'manage_options', 'TweetUpdater', 'tweet_updater_options_page' );
+	add_options_page( 'TweetUpdater', 'TweetUpdater', 'manage_options', 'TweetUpdater', 'tweet_updater_options_page' );
 
 	// add the hook for the admin settings field
 	add_action( 'admin_init', 'tweet_updater_admin_init' );
@@ -247,8 +247,8 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 		add_settings_field('tweet_updater_bitly_appkey', 'Bit.ly Appkey', 'tweet_updater_bitly_appkey', 'short_url', 'tweet_updater_short_url');
 
 	//Section 4: Use CURL to get short_url?
-	add_settings_section('tweet_updater_url_method', 'Use CURL to get external short_urls?', 'tweet_updater_url_method', 'url_method');
-		add_settings_field('tweet_updater_use_curl', 'Use curl for short URLs?', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
+	add_settings_section('tweet_updater_url_method', 'Use cURL to get external short_urls?', 'tweet_updater_url_method', 'url_method');
+		add_settings_field('tweet_updater_use_curl', 'Use cURL for short URLs?', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
 	}
 
 /* Return Form components for the Allowed Form Fields */
@@ -354,9 +354,9 @@ function tweet_updater_bitly_appkey()
 
 //Alternative short url retrieval method
 function tweet_updater_url_method()
-	{ echo "<p>Version 2.05 added an option to use CURL to create and retrieve external short urls instead of file_get_contents(). <br />Curl is required for the TwitterOAuth library, but the previous version of TwitterUpdater recommended _not_ using it's curl function. <br />I've left the option for testing. [DefProc]</p>"; }
+	{ echo "<p>Version 2.05 added the option to use php cURL to create and retrieve external short urls instead of file_get_contents(). <br />If you'd prefer to use file_get_contents() for URL retrieval, unselect this checkbox<br />This doesn't affect Twitter communication, which only uses cURL</p>"; }
 function tweet_updater_use_curl()
-	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " /><label>Some web hosts disable the get_page_contents() function. In this case, check the box to use php-curl instead."; }
+	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " /><label>Some web hosts disable the get_page_contents() function. In this case, you must use cURL."; }
 
 
 /* Form validaton functions */

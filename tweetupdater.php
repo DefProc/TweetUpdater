@@ -1,11 +1,12 @@
 <?php
 /*
 Plugin Name: TweetUpdater
-Description: WordPress plugin to update Twitter status when you create or publish a post.
-Version: 3.x.beta1
-Author: Patrick Fenner (Deferred Procrastination)
-Author URI: http://def-proc.co.uk/Projects/TweetUpdater
-Based on TwitterUpdater, version 1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
+Description: WordPress plugin to update Twitter status when you create or publish a post. Based on TwitterUpdater v1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
+Version: 3.x.beta2
+Author: Patrick Fenner (Def-Proc)
+Author URI: http://www.deferredprocrastination.co.uk/
+Plugin URI: http://www.deferredprocrastination.co.uk/projects/tweetupdater
+Help & Support: http://github.com/DefProc/TweetUpdater/issues
 
 */
 
@@ -15,78 +16,67 @@ require_once('tweetupdater_manager.php');
 
 
 
-
 	/*** TweetUpdater Actions ***/
 
 
-/* Plugin action on publish_post (submitting a post with publish/update) */
 
-function vc_tweet_publish($post_ID)  
+/* Plugin action when status changes to publish */
+
+function tweet_updater_published($post) //$post_ID)  
 {
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
-
-	$this_post = get_post($post_ID);
-	$title = $this_post->post_title; 
-	$link = get_permalink($post_ID);
-	$tweet = '';
 	
-	if( wp_is_post_revision($post_ID) ) { /* do nothing */ } 
-	elseif ( wp_is_post_autosave($post_ID) ) { /* do nothing */ }
-	else 
+	if ( $options['newpost_update'] == "1" )
 	{
-		// if it's a newly published
-		if($_POST['original_post_status'] == 'draft' && $_POST['publish'] == 'Publish' && $options['newpost_update'] == '1')
-		{
-			// Format the message
-			$tweet = tweet_updater_format_tweet( $options['newpost_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
-		} 
-		// or if it's a published and updated
-		else if ($_POST['original_post_status'] == 'publish' && $options['edited_update'] == '1') 
-		{  
-			// Fix for scheduled posts (from uniqueculture)
-			if (strlen(trim($title)) == 0) { $this_post = get_post($post_ID); if ($this_post) { $title = $this_post->post_title; } }
-			//I've not figured out what this fixes yet, maybe sometimes post_title is not set when get_post() is first called? - [DefProc]
+		$post_ID = $post->ID;
+		$title = $post->post_title; 
+		$link = get_permalink($post_ID);
+		$tweet = '';
+		
+		// Format the message
+		$tweet = tweet_updater_format_tweet( $options['newpost_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
+	
+			if($tweet != '')
+			{
+				// Send the message
+		    		$result = tweet_updater_update_status($tweet);
+			}
+		
+	} 
 
-			// Format the message
-			$tweet = tweet_updater_format_tweet( $options['edited_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
-		}     
-		if($tweet != '')
-		{
-			// Send the message
-	    		$result = tweet_updater_update_status($tweet);
-		}
-	}
-
-   return $post_ID;
+	return $post;
 }
 
 
+/* Plugin action when published is (re)published (i.e. updated) */
 
-/* Plugin action on future_to_publish (when a scheduled post gets published) */
-
-function vc_tweet_future($post_ID)  
+function tweet_updater_edited($post) //$post_ID)  
 {
+
+	
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
-
-	$this_post = get_post($post_ID);
-	$title = $this_post->post_title; 
-	$link = get_permalink($post_ID);
-	$tweet = '';
-
-	if( $options['newpost_update'] == '1' )
+	
+	if ( $options['edited_update'] == "1" )
 	{
+		$post_ID = $post->ID;
+		$title = $post->post_title; 
+		$link = get_permalink($post_ID);
+		$tweet = '';
+
 		// Format the message
-		$tweet = tweet_updater_format_tweet( $options['newpost_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
-	} 
-    		if($tweet != '')
-	{
-		// Send the message
-	   		$result = tweet_updater_update_status($tweet);
-	}
+		$tweet = tweet_updater_format_tweet( $options['edited_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
 
-	return $post_ID;
+			if($tweet != '')
+			{
+				// Send the message
+		    		$result = tweet_updater_update_status($tweet);
+			}
+		
+	} 
+	
+	return $post;
 }
 
 
@@ -94,6 +84,7 @@ function vc_tweet_future($post_ID)
 
 
 	/*** Additional Functions ***/
+
 
 
 /* Single function to output a formatted tweet */
@@ -163,19 +154,10 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 		} 
 		else 
 		{
-			// Don't want things to fail completely if la_petite_url gets deactivated, so:
-			
-			// reset to default	
-	//		$options = get_option('tweet_updater_options'); 
-	//		$option['url_method'] = 'tinyurl';
-	//		update_option( 'tweet_updater_options', $options ); 
-			
-		/* Should we reset to default? It could be a temporary problem, and the error handling loop would deal with it */
-			
 			// send error message
 			$short_url = array( 
 				'error_code' => '1',
-				'error_message' => 'Fuction deactivated. Repeat with another method.', 
+				'error_message' => 'Function deactivated. Repeat with another method.', 
 				'url_method' => 'tinyurl',
 						);
 		}
@@ -216,7 +198,7 @@ function tu_make_bitly_url($link,$login,$appkey,$use_curl)
 
 
 
-/* alternative funtion to file_get_contents(), using curl */
+/* alternative funtion to file_get_contents(), using cURL */
 
 function file_get_contents_curl($target_url) 
 {
@@ -348,11 +330,14 @@ function tweet_updater_update_status($tweet)
 	/*** WordPress Hooks ***/
 
 
-/* Action for when a post is published/edited (but not just saved) */
-	add_action( 'publish_post', 'vc_tweet_publish', 1, 1 );
+/* Action for when a post is published */
+	add_action( 'draft_to_publish', 'tweet_updater_published', 1, 1 );
+	add_action( 'new_to_publish', 'tweet_updater_published', 1, 1 );
+	add_action( 'pending_to_publish', 'tweet_updater_published', 1, 1 );
+	add_action( 'future_to_publish', 'tweet_updater_published', 1, 1 );
 
-/* Action for when a future post is published */
-	add_action( 'future_to_publish', 'vc_tweet_future', 1, 1 );
+/* Action when post is updated */
+	add_action( 'publish_to_publish', 'tweet_updater_edited', 1, 1 );
 
 /* Add the admin options page */
 	add_action( 'admin_menu', 'tweet_updater_admin_add_page' );
