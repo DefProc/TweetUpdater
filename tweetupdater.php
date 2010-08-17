@@ -1,13 +1,21 @@
 <?php
 /*
 Plugin Name: TweetUpdater
-Description: WordPress plugin to update Twitter status when you create or publish a post. Based on TwitterUpdater v1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
-Version: 3.x.beta2
-Author: Patrick Fenner (Def-Proc)
+Description: Update your Twitter status when you publish or update a post. Based on TwitterUpdater v1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
+Version: 3.x.beta3
+Author: Patrick Fenner (Def-Proc.co.uk)
 Author URI: http://www.deferredprocrastination.co.uk/
 Plugin URI: http://www.deferredprocrastination.co.uk/projects/tweetupdater
+
+
 Help & Support: http://github.com/DefProc/TweetUpdater/issues
 
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+IN THE SOFTWARE.
+ 
 */
 
 require_once('twitteroauth.php');
@@ -345,5 +353,8 @@ function tweet_updater_update_status($tweet)
 /* Intialise on first activation */
 	register_activation_hook( __FILE__, 'tweet_updater_activate' );
 
+	//add hook to include settings link on plugins page
+	$plugin = plugin_basename(__FILE__); 
+	add_filter("plugin_action_links_$plugin", 'tweet_updater_add_settings_link' );
 
 ?>

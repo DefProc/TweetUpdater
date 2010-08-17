@@ -1,7 +1,7 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.x.beta2
-Stable tag: 3.x.beta2
+Version: 3.x.beta3
+Stable tag: 3.x.beta3
 Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
 Requires at least: 3.0.1
 Tested up to: 3.0.1
@@ -102,7 +102,9 @@ Stable release for WP 3.0.1
 
 == Changelog ==
 
-= 3.0 =
+= 3.x =
+
+Changed name to *TweetUpdater*
 
 * Uses OAuth as the Twitter account authentication method. (Uses the TwitterAuth php library from [Abraham](http://github.com/abraham/twitteroauth))
 * Updated the settings page to better fit in with the WordPress styles.
@@ -113,6 +115,7 @@ Stable release for WP 3.0.1
 * Added to the [WordPress Plugins Directory](http://wordpress.org/extend/plugins/tweetupdater/).
 * Updated functions for WP 3.0.1
 * Set cURL as standard retrieval method for short URLs
+* Added Settings link on plugins admin page
 
 *Previous to version 2.11, this plugin is the same as [TwitterUpdater](http://www.twitterupdater.com).*
 

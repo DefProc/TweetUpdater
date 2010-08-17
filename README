@@ -1,6 +1,10 @@
 Plugin Name: TwitterUpdater
-Description: WordPress plugin to update Twitter status when you create or publish a post.
-Author: Patrick Fenner, Jordan Trask "@comm", Ingo "Ingoal" Hildebrandt
+Description: WordPress plugin to update your Twitter status when you publish or update a post.
+Author: Patrick Fenner
+
+= 3.x.beta3 =
+
+* Added Settings link on plugins admin page
 
 = 3.x.beta2 =
 
@@ -10,10 +14,19 @@ Author: Patrick Fenner, Jordan Trask "@comm", Ingo "Ingoal" Hildebrandt
 
 = 3.x.beta1 =
 
+* Changed name to *TweetUpdater*
 * Uses OAuth as the Twitter account authentication method. (Uses the TwitterAuth php library from [Abraham](http://github.com/abraham/twitteroauth))
 * Updated the settings page to better fit in with the WordPress styles.
 * Reduced the number of entries in the `wp-options` table to 2 by using arrays.
 * Renamed functions and DB entries to reduce the chance of collision with other plugins.
 * Complete code revision.
 * Revised documentation.
+
+= 2.11 =
+
+[http://www.deferredprocrastination.co.uk](http://www.deferredprocrastination.co.uk)
+
+* Added support for la_petite_url plugin
+* Add #url# placeholder instead of "Link title to blog?" checkbox
+* Added option to use full WordPress permalink as url
 

@@ -68,7 +68,20 @@ function tweet_updater_admin_add_page()
 
 	// add the hook for the admin settings field
 	add_action( 'admin_init', 'tweet_updater_admin_init' );
+
 }
+
+/* Add settings link on plugins admin page */
+
+function tweet_updater_add_settings_link( $links ) 
+{ 
+	$settings_link = '<a href="options-general.php?page=TweetUpdater">Settings</a>'; 
+	array_unshift( $links, $settings_link ); 
+	
+	return $links; 
+}
+ 
+
 
 /* Display the Admin Options Page */
 
