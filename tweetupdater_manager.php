@@ -195,18 +195,6 @@ function tweet_updater_options_page()
 			<p class="submit" ><input name="Submit" class="button-primary"  type="submit" value="<?php esc_attr_e('Save Options'); ?>" />
 		</form>
 	</div>
-	
-
-<?php 
-/* debug code to check database values */
-echo "<p>\$tokens: <br /><pre>";
-print_r( $tokens );
-echo "</pre></p>";
-echo "<p>\$options: <br /><pre>";
-print_r( $options );
-echo "</pre></p>"; 
-/* end */
-?>
 
 <?php
 }
