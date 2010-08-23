@@ -27,7 +27,11 @@ authentication (username & password) has now been deactivated for applications u
 The TwitterUpdater plugin has a great tradition of being updated and improved by anyone who needed it to do something different, and 
 as such TweetUpdater is one of a handful of TwitterUpdater forks. 
 
-If the short url service you like to use is not included, please see the FAQ on how to add it.
+If the short url service you like to use is not included, please see the FAQ on how to add it. If you add a service, let me know and 
+I'll add the code to the next release.
+
+* Support & Bug reports at [github.com/DefProc/TweetUpdater/issues](http://github.com/DefProc/TweetUpdater/issues)
+
 
 == Installation ==
 
