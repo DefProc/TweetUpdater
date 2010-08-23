@@ -1,7 +1,7 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.x.beta3
-Stable tag: 3.x.beta3
+Version: 3.0
+Stable tag: 3.0
 Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
 Requires at least: 3.0.1
 Tested up to: 3.0.1
@@ -9,8 +9,6 @@ Tested up to: 3.0.1
 Send tweets when a post is published or updated; uses OAuth. Will add short URL from a plugin, or generate from an external service.
 
 == Description ==
-
-**This plugin is in testing. Please test it in a non-critical application before deploying**
 
 TweetUpdater will send a tweet from you WordPress installation whenever a new post is published, or when a previously published 
 post is updated; as you choose. 
@@ -24,7 +22,7 @@ post permalinks (standard or friendly urls as selected in your site setup) the f
 * [la petite url](http://wordpress.org/extend/plugins/le-petite-url/) plugin
 
 Derived from the original TwitterUpdater, version 3 has been fully rewritten to include OAuth authorisation with Twitter; because basic
-authentication (username & password) has now been disallowed for applications using the Twitter API. 
+authentication (username & password) has now been deactivated for applications using the Twitter API. 
 
 The TwitterUpdater plugin has a great tradition of being updated and improved by anyone who needed it to do something different, and 
 as such TweetUpdater is one of a handful of TwitterUpdater forks. 
@@ -42,11 +40,15 @@ This section describes how to install the plugin and get it working.
 
 To Upgrade:
 
-* Deactivate TweetUpdater first, *before* copying the new files across.
+Either upgrade automatically from your admin pages. Or if upgrading manually: deactivate TweetUpdater *before* copying 
+the new files across; then enable when completed.
+
 * You will keep your settings when you upgrade from version 3.x and above
 * TweetUpdater will remain linked to your Twitter account when you upgrade from version 3.x or above. 
 
 Requirements:
+
+* php cURL
 
 TweetUpdater uses the php cURL module to retrieve external short URLs and to contact Twitter. Your server will need to have cURL installed and 
 activated for TweetUpdater to function. For most hosting providers, it will be installed already. Check `<?php phpinfo() ?>` if you're 
@@ -102,20 +104,21 @@ Stable release for WP 3.0.1
 
 == Changelog ==
 
-= 3.x =
+= 3.0 =
 
 Changed name to *TweetUpdater*
 
+* Changed name to *TweetUpdater*
 * Uses OAuth as the Twitter account authentication method. (Uses the TwitterAuth php library from [Abraham](http://github.com/abraham/twitteroauth))
 * Updated the settings page to better fit in with the WordPress styles.
 * Reduced the number of entries in the `wp-options` table to 2 by using arrays.
 * Renamed functions and DB entries to reduce the chance of collision with other plugins.
 * Complete code revision.
 * Revised documentation.
-* Added to the [WordPress Plugins Directory](http://wordpress.org/extend/plugins/tweetupdater/).
-* Updated functions for WP 3.0.1
 * Set cURL as standard retrieval method for short URLs
 * Added Settings link on plugins admin page
+* Added to the [WordPress Plugins Directory](http://wordpress.org/extend/plugins/tweetupdater/).
+* Updated functions for WP 3.0.1
 
 *Previous to version 2.11, this plugin is the same as [TwitterUpdater](http://www.twitterupdater.com).*
 
@@ -207,6 +210,6 @@ Jonathan Dingman (v2.0) - [http://www.firesidemedia.net/dev/software/wordpress/t
 
 = 1.0 =
 
-Based on Version 1.0 TwitterUpdater by Victoria Chan - [http://blog.victoriac.net/?p=87](http://blog.victoriac.net/?p=87)
+Based on Version 1.0 TwitterUpdater by Victoria Chan - [http://blog.victoriac.net/ja/geek/twitter-updater](http://blog.victoriac.net/ja/geek/twitter-updater)
 
 

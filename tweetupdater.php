@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: TweetUpdater
-Description: Update your Twitter status when you publish or update a post. Based on TwitterUpdater v1.0 by Victoria Chan: http://blog.victoriac.net/?p=87
-Version: 3.x.beta3
+Description: Update your Twitter status when you publish or update a post. Based on TwitterUpdater v1.0 by <a href="http://blog.victoriac.net/ja/geek/twitter-updater">Victoria Chan</a>
+Version: 3.0
 Author: Patrick Fenner (Def-Proc.co.uk)
 Author URI: http://www.deferredprocrastination.co.uk/
 Plugin URI: http://www.deferredprocrastination.co.uk/projects/tweetupdater
