@@ -254,7 +254,8 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
   // Section 5: Limit tweets to posts with certain custom field/value pair or part of a specific category
   add_settings_section('tweet_updater_limit_tweets', 'Limit tweets on updates and new posts to a certain category or customfield key value pair', 'tweet_updater_limi_tweets' ,'limit_tweets');
   add_settings_field('tweet_updater_limit_by_category', 'Only tweet about new/updated posts in the selected category', 'tweet_updater_limit_by_category', 'limit_tweets' );
-	}
+  add_settings_field('tweet_updater_limit_by_customfield', 'Only tweet about new/updated posts if a post contains this customfield key value pair', 'tweet_updater_limit_by_customfield', 'limit_tweets');
+}
 
 /* Return Form components for the Allowed Form Fields */
 
@@ -367,6 +368,15 @@ function tweet_updater_use_curl()
 function tweet_updater_limit_tweets() 
 { echo "<p>Limit tweets on new or updated posts by a customfield key/value pair or category. This prevents posts not part of this category or lacking the customfield key/value pair from
 being tweeted.</p>"; }
+function tweet_updater_limit_by_category() {
+  $options = get_option('tweet_updater_options');
+  $args = array( 
+    'name' => 'tweet_updater_options[limit_to_category]',
+    'selected' => $options['limit_to_category'],
+    'show_option_none' => 'Not limited by category'  
+  );
+  wp_dropdown_categories($args);
+}
 
 
 
@@ -407,7 +417,9 @@ function tweet_updater_options_validate($input)
 	if( $input['url_method'] != NULL ) { $options['url_method'] = $input['url_method']; }
 	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = $input['bitly_username']; }
 	if( isset( $input['bitly_appkey'] ) ) { $options['bitly_appkey'] = $input['bitly_appkey']; }
-	
+  if( $input['limit_to_category'] != NULL ) { $options['limit_to_category'] = $input['limit_to_category']; }
+
+
 	return $options;
 }
 
