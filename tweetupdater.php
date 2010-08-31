@@ -26,6 +26,58 @@ require_once('tweetupdater_manager.php');
 
 	/*** TweetUpdater Actions ***/
 
+// checks if the post has either a given custom field key/value
+// or is part of a selected category
+function tweet_updater_is_tweetable($post) 
+{
+  // retrieve the options
+  $options = get_option('tweet_updater_options');
+  
+  if($options['limit_activate']) {
+    
+    // limiter is activated, check if the post is part of 
+    // a category which is tweetable
+    if( $options['limit_to_category'] > 0 ) {
+      $post_categories = wp_get_post_categories($post->ID);
+      if( is_array($post_categories) && sizeof($post_categories) > 0 ) {
+        if( in_array($options['limit_to_category'], $post_categories) ) {
+          echo "in cat: TRUE";
+          return true;
+        } else {
+          echo "NOT in cat: FALSE";
+          return false;
+        }
+      } else {
+        echo "NO POST CATS: FALSE";
+        return false;
+      }
+    } else if(! empty($options['limit_to_customfield_key']) && ! empty($options['limit_to_customfield_val']) ) {
+        $customfield_key = get_post_meta($post->ID, $options['limit_to_customfield_key'], true);
+        $customfield_val = get_post_meta($post->ID, $options['limit_to_customfield_val'], true);
+        if( ! empty($customfield_key) && ! empty($customfield_val) ) {
+          if( ($customfield_key == $options['limit_to_customfield_key']) && ($customfield_val == $options['limit_to_customfield_val']) ) {
+            echo "fields match: true";
+            return true;
+          } else {
+            echo "fields do not match: false";
+            return false;
+          }
+        } else {
+          echo "post has no customfields: false";
+          return false;
+        }
+    } else {
+      echo "No field options set: FALSE";
+      return false;
+    } 
+  } else {
+    // limit is not active so everything is tweetable
+    echo "no limit: true";
+    return true;
+  } 
+}
+
+
 
 
 /* Plugin action when status changes to publish */
@@ -35,7 +87,7 @@ function tweet_updater_published($post) //$post_ID)
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
 	
-	if ( $options['newpost_update'] == "1" )
+	if ( $options['newpost_update'] == "1" && tweet_updater_is_tweetable($post) )
 	{
 		$post_ID = $post->ID;
 		$title = $post->post_title; 
@@ -66,7 +118,7 @@ function tweet_updater_edited($post) //$post_ID)
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
 	
-	if ( $options['edited_update'] == "1" )
+	if ( $options['edited_update'] == "1" && tweet_updater_is_tweetable() )
 	{
 		$post_ID = $post->ID;
 		$title = $post->post_title; 
