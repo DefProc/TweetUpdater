@@ -249,7 +249,11 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 
 	//Section 4: Use CURL to get short_url?
 	add_settings_section('tweet_updater_url_method', 'Use cURL to get external short_urls?', 'tweet_updater_url_method', 'url_method');
-		add_settings_field('tweet_updater_use_curl', 'Use cURL for short URLs?', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
+    add_settings_field('tweet_updater_use_curl', 'Use cURL for short URLs?', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
+
+  // Section 5: Limit tweets to posts with certain custom field/value pair or part of a specific category
+  add_settings_section('tweet_updater_limit_tweets', 'Limit tweets on updates and new posts to a certain category or customfield key value pair', 'tweet_updater_limi_tweets' ,'limit_tweets');
+  add_settings_field('tweet_updater_limit_by_category', 'Only tweet about new/updated posts in the selected category', 'tweet_updater_limit_by_category', 'limit_tweets' );
 	}
 
 /* Return Form components for the Allowed Form Fields */
@@ -358,6 +362,12 @@ function tweet_updater_url_method()
 	{ echo "<p>Version 2.05 added the option to use php cURL to create and retrieve external short urls instead of file_get_contents(). <br />If you'd prefer to use file_get_contents() for URL retrieval, unselect this checkbox<br />This doesn't affect Twitter communication, which only uses cURL</p>"; }
 function tweet_updater_use_curl()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " /><label>Some web hosts disable the get_page_contents() function. In this case, you must use cURL."; }
+
+// Limit tweets on new or published posts
+function tweet_updater_limit_tweets() 
+{ echo "<p>Limit tweets on new or updated posts by a customfield key/value pair or category. This prevents posts not part of this category or lacking the customfield key/value pair from
+being tweeted.</p>"; }
+
 
 
 /* Form validaton functions */
