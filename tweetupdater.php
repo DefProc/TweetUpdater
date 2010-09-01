@@ -43,36 +43,23 @@ function tweet_updater_is_tweetable($post)
         if( in_array($options['limit_to_category'], $post_categories) ) {
           echo "in cat: TRUE";
           return true;
-        } else {
-          echo "NOT in cat: FALSE";
-          return false;
-        }
-      } else {
-        echo "NO POST CATS: FALSE";
-        return false;
-      }
-    } else if(! empty($options['limit_to_customfield_key']) && ! empty($options['limit_to_customfield_val']) ) {
-        $customfield_key = get_post_meta($post->ID, $options['limit_to_customfield_key'], true);
-        $customfield_val = get_post_meta($post->ID, $options['limit_to_customfield_val'], true);
-        if( ! empty($customfield_key) && ! empty($customfield_val) ) {
-          if( ($customfield_key == $options['limit_to_customfield_key']) && ($customfield_val == $options['limit_to_customfield_val']) ) {
-            echo "fields match: true";
-            return true;
-          } else {
-            echo "fields do not match: false";
-            return false;
-          }
-        } else {
-          echo "post has no customfields: false";
-          return false;
-        }
-    } else {
-      echo "No field options set: FALSE";
-      return false;
+        } 
+      } 
     } 
+    
+    // Ok, no category found so continue with checking for the customfields 
+    if(! empty($options['limit_to_customfield_key']) && ! empty($options['limit_to_customfield_val']) ) {
+      $customfield_val = get_post_meta($post->ID, $options['limit_to_customfield_key'], true);
+      if( ! empty($customfield_val) && $customfield_val == $options['limit_to_customfield_val'] ) {
+        echo "fields match: true";
+        return true;
+      } 
+    }
+
+    // in all other cases return false
+    return false;
   } else {
     // limit is not active so everything is tweetable
-    echo "no limit: true";
     return true;
   } 
 }
