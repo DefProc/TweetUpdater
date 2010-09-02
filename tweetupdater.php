@@ -34,7 +34,7 @@ function tweet_updater_published($post) //$post_ID)
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
 	
-	if ( $options['newpost_update'] == "1" && tweet_updater_is_tweetable($post) )
+	if ( $options['newpost_update'] == "1" && tweet_updater_is_tweetable($post, $options) )
 	{
 		$post_ID = $post->ID;
 		$title = $post->post_title; 
@@ -60,12 +60,10 @@ function tweet_updater_published($post) //$post_ID)
 
 function tweet_updater_edited($post) //$post_ID)  
 {
-
-	
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
 	
-	if ( $options['edited_update'] == "1" && tweet_updater_is_tweetable() )
+	if ( $options['edited_update'] == "1" && tweet_updater_is_tweetable($post, $options) )
 	{
 		$post_ID = $post->ID;
 		$title = $post->post_title; 
@@ -95,11 +93,8 @@ function tweet_updater_edited($post) //$post_ID)
 
 // checks if the post has either a given custom field key/value
 // or is part of a selected category
-function tweet_updater_is_tweetable($post) 
+function tweet_updater_is_tweetable($post, $options) 
 {
-	// retrieve the options
-	$options = get_option('tweet_updater_options');
-	
 	if($options['limit_activate']) 
 	{
 		// limiter is activated, check if the post is part of 
@@ -108,9 +103,9 @@ function tweet_updater_is_tweetable($post)
 		{
 			$post_categories = wp_get_post_categories($post->ID);
 			
-			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
+			if( is_array($post_categories) && sizeof(post_categories) > 0 ) 
 			{
-				if( in_array($options['limit_to_category'], $post_categories) ) 
+				if( in_array( $options['limit_to_category'], $post_categories ) ) 
 				{
 					echo "in cat: TRUE";
 					return true;
@@ -118,18 +113,33 @@ function tweet_updater_is_tweetable($post)
 			} 
 		} 
 		
-		// Ok, no category found so continue with checking for the customfields 
-		if(! empty($options['limit_to_customfield_key']) && ! empty($options['limit_to_customfield_val']) ) 
+		// Ok, no category found so continue with checking for the custom fields 
+		if( !empty( $options['limit_to_custom_field_key'] ) ) 
 		{
-			$customfield_val = get_post_meta($post->ID, $options['limit_to_customfield_key'], true);
-			
-			if( ! empty($customfield_val) && $customfield_val == $options['limit_to_customfield_val'] ) 
+			// If the custom_field_val is empty, just check the key for a match
+			if( empty( $options['limit_to_custom_field_val'] ) || $options['limit_to_custom_field_val'] == '*' )
+			{				
+				$custom_field_val = get_post_meta( $post->ID, $options['limit_to_custom_field_key'], true );
+				
+				if( !empty($custom_field_val) ) 
+				{
+					echo "key matches: true";
+					return true;
+				} 
+			}
+			// If there's a custom_field_val, check both match
+			else if( !empty( $options['limit_to_custom_field_val'] ) )
 			{
-				echo "fields match: true";
-				return true;
-			} 
+				$custom_field_val = get_post_meta( $post->ID, $options['limit_to_custom_field_key'], true );
+				
+				if( !empty($custom_field_val) && $custom_field_val == $options['limit_to_custom_field_val'] ) 
+				{
+					echo "fields match: true";
+					return true;
+				} 
+			}
 		}
-		
+
 		// in all other cases return false
 		return false;
 

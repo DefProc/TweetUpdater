@@ -46,8 +46,8 @@ function tweet_updater_activate()
 		'edited_format' => 'Updated blog post: #title#: #url#',
 		'limit_activate' => '0',
 		'limit_to_category' => '-1',
-		'limit_to_customfield_key' => '',
-		'limit_to_customfield_val' => '',
+		'limit_to_custom_field_key' => '',
+		'limit_to_custom_field_val' => '',
 		'use_curl' => '1',
 		'url_method' => 'tinyurl',
                 'bitly_username' => '',
@@ -255,9 +255,9 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 	
 	// Section 3: Limit tweets to posts with certain custom field/value pair or part of a specific category
 	add_settings_section('tweet_updater_limit_tweets', 'Limit tweets:', 'tweet_updater_limit_tweets' ,'limit_tweets');
-		add_settings_field('tweet_updater_limit_activate', 'Limit tweets?', 'tweet_updater_limit_activate', 'limit_tweets', 'tweet_updater_limit_tweets');
-		add_settings_field('tweet_updater_limit_to_category', 'Only tweet about new/updated posts in the selected category', 'tweet_updater_limit_to_category', 'limit_tweets', 'tweet_updater_limit_tweets');
-		add_settings_field('tweet_updater_limit_to_customfield', 'Only tweet about new/updated posts if a post contains this customfield key value pair', 'tweet_updater_limit_to_customfield', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_activate', 'Limit tweeting using the rules below?', 'tweet_updater_limit_activate', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_to_category', 'Only tweet for posts in the selected category', 'tweet_updater_limit_to_category', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_to_customfield', 'Only tweet for posts with this Meta tag and value', 'tweet_updater_limit_to_customfield', 'limit_tweets', 'tweet_updater_limit_tweets');
 
 	//Section 4: Short Url service
 	add_settings_section('tweet_updater_short_url', 'Short URL Service:', 'tweet_updater_short_url', 'short_url');
@@ -299,15 +299,15 @@ function tweet_updater_auth2_reset()
 function tweet_updater_auth3_reset() 
 	{ echo "<input id='tweet_updater_auth3_reset' type='hidden' name='tweet_updater_auth[auth3_flag]' value='0' />"; }
 function tweet_updater_req_key_reset() 
-	{ echo "<input id='tweet_updater_req_key_reset' type='hidden' name='tweet_updater_auth[request_key]' value='NULL' />"; }
+	{ echo "<input id='tweet_updater_req_key_reset' type='hidden' name='tweet_updater_auth[request_key]' value='' />"; }
 function tweet_updater_req_sec_reset() 
-	{ echo "<input id='tweet_updater_req_sec_reset' type='hidden' name='tweet_updater_auth[request_secret]' value='NULL' />"; }
+	{ echo "<input id='tweet_updater_req_sec_reset' type='hidden' name='tweet_updater_auth[request_secret]' value='' />"; }
 function tweet_updater_req_link_reset() 
-	{ echo "<input id='tweet_updater_req_link_reset' type='hidden' name='tweet_updater_auth[request_link]' value='NULL' />"; }
+	{ echo "<input id='tweet_updater_req_link_reset' type='hidden' name='tweet_updater_auth[request_link]' value='' />"; }
 function tweet_updater_acc_key_reset() 
-	{ echo "<input id='tweet_updater_acc_key_reset' type='hidden' name='tweet_updater_auth[access_key]' value='NULL' />"; }
+	{ echo "<input id='tweet_updater_acc_key_reset' type='hidden' name='tweet_updater_auth[access_key]' value='' />"; }
 function tweet_updater_acc_sec_reset() 
-	{ echo "<input id='tweet_updater_acc_sec_reset' type='hidden' name='tweet_updater_auth[access_secret]' value='NULL' />"; }
+	{ echo "<input id='tweet_updater_acc_sec_reset' type='hidden' name='tweet_updater_auth[access_secret]' value='' />"; }
 
 //New Post published
 function tweet_updater_new_post()
@@ -327,7 +327,7 @@ function tweet_updater_edited_format()
 
   // Limit tweets to Categories and Custom Fields
 function tweet_updater_limit_tweets() 
-	{ echo "<p>Limit tweets on new or updated posts to posts with a certain customfield key/value pair or in a selected category.</p>"; }
+	{ echo "<p>Sending of tweets can be limited to posts of a selected category, or that have a specified Custom Field (Meta) title and/or value.</p>"; }
 function tweet_updater_limit_activate()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_limit_activate' type='checkbox' name='tweet_updater_options[limit_activate]' value='1'"; if( $options['limit_activate'] == '1' ) { echo " checked='true'"; }; echo " />"; }
 function tweet_updater_limit_to_category() 
@@ -343,10 +343,10 @@ function tweet_updater_limit_to_category()
 function tweet_updater_limit_to_customfield()
 	{
 	$options = get_option('tweet_updater_options');
-	echo "<input id='tweet_updater_limit_to_customfield_key' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_customfield_key]' value='{$options['limit_to_customfield_key']}' />";
-	echo " <label for=\"tweet_updater_limit_to_customfield_key\">Customfield key</label><br />";
-	echo "<input id='tweet_updater_limit_to_customfield_val' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_customfield_val]' value='{$options['limit_to_customfield_val']}' />";
-	echo " <label for=\"tweet_updater_limit_to_customfield_val\">Customfield value</label>";
+	echo "<input id='tweet_updater_limit_to_custom_field_key' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_custom_field_key]' value='{$options['limit_to_custom_field_key']}' />";
+	echo "<label for='tweet_updater_limit_to_custom_field_key'> Custom Field Title (key)</label><br />";
+	echo "<input id='tweet_updater_limit_to_custom_field_val' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_custom_field_val]' value='{$options['limit_to_custom_field_val']}' />";
+	echo "<label for='tweet_updater_limit_to_custom_field_val'> Custom Field Value (leave blank to match any value)</label>";
 	}
 
 
@@ -365,7 +365,7 @@ function tweet_updater_chose_url1()
 	{
 		echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='petite'";
 		if( $options['url_method'] == 'petite' ) { echo " checked='true'"; };
-		echo " /><label for='tweet_updater_chose_url'>la_petite_url plugin</label></li>"; 
+		echo " /><label for='tweet_updater_chose_url'>la_petite_url plugin. <a href='options-general.php?page=le-petite-url/la-petite-url-options.php'>Settings</a></label></li>"; 
 	}
 
 	// Full length WordPress Permalink
@@ -380,7 +380,7 @@ function tweet_updater_chose_url1()
 	//Bit.ly
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='bitly'";
 	if( $options['url_method'] == 'bitly' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'><a href='http://bit.ly/a/your_api_key'>Bit.ly</a> (set your account details below)</label>";
+	echo " /><label for='tweet_updater_chose_url'>Bit.ly (set your account details below) <a href='http://bit.ly/a/your_api_key'>http://bit.ly</a></label>";
 		//Bit.ly Options
 		echo "	<ul style='margin-left: 3em; margin-top: 0.5em;'>
 			<li><label for='tweet_updater_bitly_username'>Username: </label><input id='tweet_updater_bitly_username' type='text' size='20' name='tweet_updater_options[bitly_username]' value='{$options['bitly_username']}' /></li>
@@ -391,24 +391,24 @@ function tweet_updater_chose_url1()
 	// Stwnsh
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='stwnsh'";
 	if( $options['url_method'] == 'stwnsh' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'><a href='http://stwnsh.com/'>Stwnsh</a>,  A Welsh language service.</label></li>"; 
+	echo " /><label for='tweet_updater_chose_url'>Stwnsh,  A Welsh language service. <a href='http://stwnsh.com/'>http://stwnsh.com</a></label></li>"; 
 
 	// TinyURL
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='tinyurl'";
 	if( $options['url_method'] == 'tinyurl' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'><a href='http://www.tinyurl.com/'>TinyURL</a></label></li>";	
+	echo " /><label for='tweet_updater_chose_url'>TinyURL <a href='http://tinyurl.com/'>http://tinyurl.com</a></label></li>";	
 
 	// ZZ.GD
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='zzgd'";
 	if( $options['url_method'] == 'zzgd' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'><a href='http://zz.gd/'>ZZ.GD</a></label></li>"; 
+	echo " /><label for='tweet_updater_chose_url'>ZZ.GD <a href='http://zz.gd/'>http://zz.gd</a></label></li>"; 
 
 	echo "</ul>";
 }
 
 //Alternative short url retrieval method
 function tweet_updater_url_method()
-	{ echo "<p>Version 2.05 added the option to use php cURL to create and retrieve external short urls instead of file_get_contents(). <br />If you'd prefer to use file_get_contents() for URL retrieval, unselect this checkbox<br />This doesn't affect Twitter communication, which only uses cURL</p>"; }
+	{ echo "<p>Version 2.05 added the option to use php cURL to create and retrieve external short urls instead of file_get_contents(). <br />If you'd prefer to use file_get_contents() for URL retrieval, unselect this checkbox.<br />This doesn't affect Twitter communication, which only uses cURL.</p>"; }
 function tweet_updater_use_curl()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " /><label>Some web hosts disable the get_page_contents() function. In this case, you must use cURL."; }
 
@@ -423,17 +423,17 @@ function tweet_updater_auth_validate($input) //n.b. else statements required for
 	
 	// The WordPress Settings API will overwrite arrays in the database with only the fields used in the form
 	// To retain all the fields, the use the changed items to update the original array.
-	if( $input['consumer_key'] != NULL ) { $tokens['consumer_key'] = $input['consumer_key']; }
-	if( $input['consumer_secret'] != NULL ) { $tokens['consumer_secret'] = $input['consumer_secret']; }
-	if( $input['default_consumer_keys'] != NULL ) { $tokens['default_consumer_keys'] = $input['default_consumer_keys']; } else { $tokens['default_consumer_keys'] = '0'; }
-	if( $input['request_key'] != NULL ) { $tokens['request_key'] = $input['request_key']; }
-	if( $input['request_secret'] != NULL ) { $tokens['request_secret'] = $input['request_secret']; }
-	if( $input['request_link'] != NULL ) { $tokens['request_link'] = $input['request_link']; }
-	if( $input['access_key'] != NULL ) { $tokens['access_key'] = $input['access_key']; }
-	if( $input['access_secret'] != NULL ) { $tokens['access_secret'] = $input['access_secret']; }
-	if( $input['auth1_flag'] != NULL ) { $tokens['auth1_flag'] = $input['auth1_flag']; }
-	if( $input['auth2_flag'] != NULL ) { $tokens['auth2_flag'] = $input['auth2_flag']; }
-	if( $input['auth3_flag'] != NULL ) { $tokens['auth3_flag'] = $input['auth3_flag']; }
+	if( !empty( $input['consumer_key'] ) ) 		{ $tokens['consumer_key'] = 	$input['consumer_key']; }
+	if( !empty( $input['consumer_secret'] ) ) 	{ $tokens['consumer_secret'] = 	$input['consumer_secret']; }
+	if( !empty( $input['default_consumer_keys'] ) ) { $tokens['default_consumer_keys'] = $input['default_consumer_keys']; } else { $tokens['default_consumer_keys'] = '0'; }
+	if( !empty( $input['request_key'] ) ) 		{ $tokens['request_key'] = 	$input['request_key']; }
+	if( !empty( $input['request_secret'] ) ) 	{ $tokens['request_secret'] = 	$input['request_secret']; }
+	if( !empty( $input['request_link'] ) ) 		{ $tokens['request_link'] = 	$input['request_link']; }
+	if( !empty( $input['access_key'] ) ) 		{ $tokens['access_key'] = 	$input['access_key']; }
+	if( !empty( $input['access_secret'] ) ) 	{ $tokens['access_secret'] = 	$input['access_secret']; }
+	if( !empty( $input['auth1_flag'] ) ) 		{ $tokens['auth1_flag'] = 	$input['auth1_flag']; }
+	if( !empty( $input['auth2_flag'] ) ) 		{ $tokens['auth2_flag'] = 	$input['auth2_flag']; }
+	if( !empty( $input['auth3_flag'] ) ) 		{ $tokens['auth3_flag'] = 	$input['auth3_flag']; }
 	
 	return $tokens;
 }
@@ -444,21 +444,18 @@ function tweet_updater_options_validate($input)
 	
 	// The WordPress Settings API will overwrite arrays in the database with only the fields used in the form
 	// To retain all the fields, the use the changed items to update the original array.
-	if( $input['newpost_update'] != NULL ) { $options['newpost_update'] = $input['newpost_update']; } else { $options['newpost_update'] = '0'; }
-	if( $input['newpost_format'] != NULL ) { $options['newpost_format'] = $input['newpost_format']; }
-	if( $input['edited_update'] != NULL ) { $options['edited_update'] = $input['edited_update']; } else { $options['edited_update'] = '0'; }
-	if( $input['edited_format'] != NULL ) { $options['edited_format'] = $input['edited_format']; }
-	if( $input['limit_activate'] != NULL) { $options['limit_activate'] = $input['limit_activate']; }  
-	if( $input['limit_to_category'] != NULL ) { $options['limit_to_category'] = $input['limit_to_category']; }
-	if( ! empty($input['limit_to_customfield_key']) && ! empty($input['limit_to_customfield_val']) ) 
-	{ 
-		$options['limit_to_customfield_key'] = $input['limit_to_customfield_key'];  
-		$options['limit_to_customfield_val'] = $input['limit_to_customfield_val'];  
-	}
-	if( $input['use_curl'] != NULL ) { $options['use_curl'] = $input['use_curl']; } else { $options['use_curl'] = '0'; }
-	if( $input['url_method'] != NULL ) { $options['url_method'] = $input['url_method']; }
-	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = $input['bitly_username']; }
-	if( isset( $input['bitly_appkey'] ) ) { $options['bitly_appkey'] = $input['bitly_appkey']; }
+	if( !empty( $input['newpost_update'] ) ) 	{ $options['newpost_update'] = 	$input['newpost_update']; } else { $options['newpost_update'] = '0'; }
+	if( !empty( $input['newpost_format'] ) ) 	{ $options['newpost_format'] = 	$input['newpost_format']; }
+	if( !empty( $input['edited_update'] ) ) 	{ $options['edited_update'] = 	$input['edited_update']; } else { $options['edited_update'] = '0'; }
+	if( !empty( $input['edited_format'] ) ) 	{ $options['edited_format'] = 	$input['edited_format']; }
+	if( !empty( $input['limit_activate'] ) ) 	{ $options['limit_activate'] = 	$input['limit_activate']; }  else { $options['limit_activate'] = '0'; }
+	if( !empty( $input['limit_to_category'] ) ) 	{ $options['limit_to_category'] = $input['limit_to_category']; }
+	if( !empty( $input['limit_to_custom_field_key'] ) ) { $options['limit_to_custom_field_key'] = $input['limit_to_custom_field_key']; }
+	if( !empty( $input['limit_to_custom_field_val'] ) ) { $options['limit_to_custom_field_val'] = $input['limit_to_custom_field_val']; }
+	if( !empty( $input['use_curl'] ) ) 		{ $options['use_curl'] = 	$input['use_curl']; } else { $options['use_curl'] = '0'; }
+	if( !empty( $input['url_method'] ) ) 		{ $options['url_method'] = 	$input['url_method']; }
+	if( !empty( $input['bitly_username'] ) ) 	{ $options['bitly_username'] = 	$input['bitly_username']; }
+	if( !empty( $input['bitly_appkey'] ) ) 		{ $options['bitly_appkey'] = 	$input['bitly_appkey']; }
 
 	return $options;
 }
