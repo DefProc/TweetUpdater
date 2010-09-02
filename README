@@ -2,6 +2,11 @@ Plugin Name: TwitterUpdater
 Description: WordPress plugin to update your Twitter status when you publish or update a post.
 Author: Patrick Fenner
 
+= 3.1 = 
+
+* Add "limit by category or custom field" (LimitCategory Branch) - From BjornW http://burobjorn.nl/
+* Add Welsh language URL shortener (URLShort Branch) - From Gareth Jones http://stwnsh.com/
+
 = 3.0 =
 
 * Changed name to *TweetUpdater*
