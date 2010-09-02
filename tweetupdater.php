@@ -103,7 +103,7 @@ function tweet_updater_is_tweetable($post, $options)
 		{
 			$post_categories = wp_get_post_categories($post->ID);
 			
-			if( is_array($post_categories) && sizeof(post_categories) > 0 ) 
+			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
 			{
 				if( in_array( $options['limit_to_category'], $post_categories ) ) 
 				{
