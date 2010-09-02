@@ -171,36 +171,8 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 
 function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID ) 
 {
-	if ( $url_method == 'zzgd' ) 
-	{ 
-		$target_url = "http://zz.gd/api-create.php?url=" . $link;
-		if ( $use_curl == '1' ) 
-		{ 
-			$short_url = file_get_contents_curl($target_url); 
-		} 
-		else 
-		{ 
-			$short_url = file_get_contents($target_url); 
-		}
-	}
-	else if ( $url_method == 'tinyurl' ) 
-	{
-		$target_url = "http://tinyurl.com/api-create.php?url=" . $link;
-		if ( $use_curl == '1' ) 
-		{
-			$short_url = file_get_contents_curl($target_url);
-		} 
-		else 
-		{      
-			$short_url = file_get_contents($target_url);
-		}
-	}
-	else if ( $url_method == 'bitly' ) 
-	{
-		$options = get_option('tweet_updater_options');
-		$short_url = tu_make_bitly_url($link,$options['bitly_username'],$options['bitly_appkey'],$use_curl);
-	}
-	else if ( $url_method == 'petite' ) 
+	//Internal URL providers:
+	if ( $url_method == 'petite' ) 
 	{
 		if(function_exists('get_la_petite_url_permalink')) 
 		{
@@ -220,6 +192,49 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 	else if ( $url_method == 'permalink' ) 
 	{
 		$short_url = $link; 
+	}
+
+	//External URL shorteners:
+	else if ( $url_method == 'bitly' ) 
+	{
+		$options = get_option('tweet_updater_options');
+		$short_url = tu_make_bitly_url($link,$options['bitly_username'],$options['bitly_appkey'],$use_curl);
+	}
+	else if ( $url_method == 'tinyurl' ) 
+	{
+		$target_url = "http://tinyurl.com/api-create.php?url=" . $link;
+		if ( $use_curl == '1' ) 
+		{
+			$short_url = file_get_contents_curl($target_url);
+		} 
+		else 
+		{      
+			$short_url = file_get_contents($target_url);
+		}
+	}
+	if ( $url_method == 'stwnsh' ) 
+	{ 
+		$target_url = "http://stwnsh.com/api.php?format=simple&action=shorturl&url=" . $link;
+		if ( $use_curl == '1' ) 
+		{ 
+			$short_url = file_get_contents_curl($target_url); 
+		} 
+		else 
+		{ 
+			$short_url = file_get_contents($target_url); 
+		}
+	}
+	else if ( $url_method == 'zzgd' ) 
+	{ 
+		$target_url = "http://zz.gd/api-create.php?url=" . $link;
+		if ( $use_curl == '1' ) 
+		{ 
+			$short_url = file_get_contents_curl($target_url); 
+		} 
+		else 
+		{ 
+			$short_url = file_get_contents($target_url); 
+		}
 	}
 
 	return $short_url;
