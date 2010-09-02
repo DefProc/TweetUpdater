@@ -26,46 +26,6 @@ require_once('tweetupdater_manager.php');
 
 	/*** TweetUpdater Actions ***/
 
-// checks if the post has either a given custom field key/value
-// or is part of a selected category
-function tweet_updater_is_tweetable($post) 
-{
-  // retrieve the options
-  $options = get_option('tweet_updater_options');
-  
-  if($options['limit_activate']) {
-    
-    // limiter is activated, check if the post is part of 
-    // a category which is tweetable
-    if( $options['limit_to_category'] > 0 ) {
-      $post_categories = wp_get_post_categories($post->ID);
-      if( is_array($post_categories) && sizeof($post_categories) > 0 ) {
-        if( in_array($options['limit_to_category'], $post_categories) ) {
-          echo "in cat: TRUE";
-          return true;
-        } 
-      } 
-    } 
-    
-    // Ok, no category found so continue with checking for the customfields 
-    if(! empty($options['limit_to_customfield_key']) && ! empty($options['limit_to_customfield_val']) ) {
-      $customfield_val = get_post_meta($post->ID, $options['limit_to_customfield_key'], true);
-      if( ! empty($customfield_val) && $customfield_val == $options['limit_to_customfield_val'] ) {
-        echo "fields match: true";
-        return true;
-      } 
-    }
-
-    // in all other cases return false
-    return false;
-  } else {
-    // limit is not active so everything is tweetable
-    return true;
-  } 
-}
-
-
-
 
 /* Plugin action when status changes to publish */
 
@@ -132,6 +92,54 @@ function tweet_updater_edited($post) //$post_ID)
 
 	/*** Additional Functions ***/
 
+
+// checks if the post has either a given custom field key/value
+// or is part of a selected category
+function tweet_updater_is_tweetable($post) 
+{
+	// retrieve the options
+	$options = get_option('tweet_updater_options');
+	
+	if($options['limit_activate']) 
+	{
+		// limiter is activated, check if the post is part of 
+		// a category which is tweetable
+		if( $options['limit_to_category'] > 0 ) 
+		{
+			$post_categories = wp_get_post_categories($post->ID);
+			
+			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
+			{
+				if( in_array($options['limit_to_category'], $post_categories) ) 
+				{
+					echo "in cat: TRUE";
+					return true;
+				} 
+			} 
+		} 
+		
+		// Ok, no category found so continue with checking for the customfields 
+		if(! empty($options['limit_to_customfield_key']) && ! empty($options['limit_to_customfield_val']) ) 
+		{
+			$customfield_val = get_post_meta($post->ID, $options['limit_to_customfield_key'], true);
+			
+			if( ! empty($customfield_val) && $customfield_val == $options['limit_to_customfield_val'] ) 
+			{
+				echo "fields match: true";
+				return true;
+			} 
+		}
+		
+		// in all other cases return false
+		return false;
+
+	} 
+	else 
+	{
+		// limit is not active so everything is tweetable
+		return true;
+	} 
+}
 
 
 /* Single function to output a formatted tweet */

@@ -43,11 +43,11 @@ function tweet_updater_activate()
 		'newpost_update' => '1',
 		'newpost_format' => 'New blog post: #title#: #url#',
 		'edited_update' => '1',
-    'edited_format' => 'Updated blog post: #title#: #url#',
-    'limit_activate' => '0',
-    'limit_to_category' => '-1',
-    'limit_to_customfield_key' => '',
-    'limit_to_customfield_val' => '',
+		'edited_format' => 'Updated blog post: #title#: #url#',
+		'limit_activate' => '0',
+		'limit_to_category' => '-1',
+		'limit_to_customfield_key' => '',
+		'limit_to_customfield_val' => '',
 		'use_curl' => '1',
 		'url_method' => 'tinyurl',
                 'bitly_username' => '',
@@ -245,12 +245,12 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 	add_settings_section('tweet_updater_edited_post', 'Published Post Updated:', 'tweet_updater_edited_post', 'edited_post');
 		add_settings_field('tweet_updater_edited_update', 'Update Twitter when a published post is updated?', 'tweet_updater_edited_update', 'edited_post', 'tweet_updater_edited_post');
 		add_settings_field('tweet_updater_edited_format', 'Tweet format for an updated post:', 'tweet_updater_edited_format', 'edited_post', 'tweet_updater_edited_post');
-    
-  // Section 3: Limit tweets to posts with certain custom field/value pair or part of a specific category
-  add_settings_section('tweet_updater_limit_tweets', 'Limit tweets:', 'tweet_updater_limit_tweets' ,'limit_tweets');
-    add_settings_field('tweet_updater_limit_activate', 'Limit tweets?', 'tweet_updater_limit_activate', 'limit_tweets', 'tweet_updater_limit_tweets');
-    add_settings_field('tweet_updater_limit_to_category', 'Only tweet about new/updated posts in the selected category', 'tweet_updater_limit_to_category', 'limit_tweets', 'tweet_updater_limit_tweets');
-    add_settings_field('tweet_updater_limit_to_customfield', 'Only tweet about new/updated posts if a post contains this customfield key value pair', 'tweet_updater_limit_to_customfield', 'limit_tweets', 'tweet_updater_limit_tweets');
+	
+	// Section 3: Limit tweets to posts with certain custom field/value pair or part of a specific category
+	add_settings_section('tweet_updater_limit_tweets', 'Limit tweets:', 'tweet_updater_limit_tweets' ,'limit_tweets');
+		add_settings_field('tweet_updater_limit_activate', 'Limit tweets?', 'tweet_updater_limit_activate', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_to_category', 'Only tweet about new/updated posts in the selected category', 'tweet_updater_limit_to_category', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_to_customfield', 'Only tweet about new/updated posts if a post contains this customfield key value pair', 'tweet_updater_limit_to_customfield', 'limit_tweets', 'tweet_updater_limit_tweets');
 
 	//Section 4: Short Url service
 	add_settings_section('tweet_updater_short_url', 'Short URL Service:', 'tweet_updater_short_url', 'short_url');
@@ -320,33 +320,29 @@ function tweet_updater_edited_update()
 function tweet_updater_edited_format()
 	{ global $tweet_updater_placeholders; $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_edited_format' type='text' size='60' maxlength='146' name='tweet_updater_options[edited_format]' value='{$options['edited_format']}' />" . $tweet_updater_placeholders; }
 
-  // Limit tweets on new or published posts
+  // Limit tweets to Categories and Custom Fields
 function tweet_updater_limit_tweets() 
-  { echo "<p>Limit tweets on new or updated posts to posts with a certain customfield key/value pair or in a selected category.</p>"; }
+	{ echo "<p>Limit tweets on new or updated posts to posts with a certain customfield key/value pair or in a selected category.</p>"; }
 function tweet_updater_limit_activate()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_limit_activate' type='checkbox' name='tweet_updater_options[limit_activate]' value='1'"; if( $options['limit_activate'] == '1' ) { echo " checked='true'"; }; echo " />"; }
-  {
-
-}  
-  
 function tweet_updater_limit_to_category() 
-  {
-  $options = get_option('tweet_updater_options');
-  $args = array( 
-    'name' => 'tweet_updater_options[limit_to_category]',
-    'selected' => $options['limit_to_category'],
-    'show_option_none' => 'Do not limit to any category'  
-  );
-  wp_dropdown_categories($args);
-}
+	{
+	$options = get_option('tweet_updater_options');
+	$args = array( 
+		'name' => 'tweet_updater_options[limit_to_category]',
+		'selected' => $options['limit_to_category'],
+		'show_option_none' => 'Do not limit to any category'  
+			);
+	wp_dropdown_categories($args);
+	}
 function tweet_updater_limit_to_customfield()
-  {
-  $options = get_option('tweet_updater_options');
-  echo "<input id='tweet_updater_limit_to_customfield_key' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_customfield_key]' value='{$options['limit_to_customfield_key']}' />";
-  echo " <label for=\"tweet_updater_limit_to_customfield_key\">Customfield key</label><br />";
-  echo "<input id='tweet_updater_limit_to_customfield_val' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_customfield_val]' value='{$options['limit_to_customfield_val']}' />";
-  echo " <label for=\"tweet_updater_limit_to_customfield_val\">Customfield value</label>";
-  }
+	{
+	$options = get_option('tweet_updater_options');
+	echo "<input id='tweet_updater_limit_to_customfield_key' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_customfield_key]' value='{$options['limit_to_customfield_key']}' />";
+	echo " <label for=\"tweet_updater_limit_to_customfield_key\">Customfield key</label><br />";
+	echo "<input id='tweet_updater_limit_to_customfield_val' type='text' size='20' maxlength='250' name='tweet_updater_options[limit_to_customfield_val]' value='{$options['limit_to_customfield_val']}' />";
+	echo " <label for=\"tweet_updater_limit_to_customfield_val\">Customfield value</label>";
+	}
 
 
 
@@ -436,12 +432,13 @@ function tweet_updater_options_validate($input)
 	if( $input['newpost_format'] != NULL ) { $options['newpost_format'] = $input['newpost_format']; }
 	if( $input['edited_update'] != NULL ) { $options['edited_update'] = $input['edited_update']; } else { $options['edited_update'] = '0'; }
 	if( $input['edited_format'] != NULL ) { $options['edited_format'] = $input['edited_format']; }
-  if( $input['limit_activate'] != NULL) { $options['limit_activate'] = $input['limit_activate']; }  
-  if( $input['limit_to_category'] != NULL ) { $options['limit_to_category'] = $input['limit_to_category']; }
-  if( ! empty($input['limit_to_customfield_key']) && ! empty($input['limit_to_customfield_val']) ) { 
-    $options['limit_to_customfield_key'] = $input['limit_to_customfield_key'];  
-    $options['limit_to_customfield_val'] = $input['limit_to_customfield_val'];  
-  }
+	if( $input['limit_activate'] != NULL) { $options['limit_activate'] = $input['limit_activate']; }  
+	if( $input['limit_to_category'] != NULL ) { $options['limit_to_category'] = $input['limit_to_category']; }
+	if( ! empty($input['limit_to_customfield_key']) && ! empty($input['limit_to_customfield_val']) ) 
+	{ 
+		$options['limit_to_customfield_key'] = $input['limit_to_customfield_key'];  
+		$options['limit_to_customfield_val'] = $input['limit_to_customfield_val'];  
+	}
 	if( $input['use_curl'] != NULL ) { $options['use_curl'] = $input['use_curl']; } else { $options['use_curl'] = '0'; }
 	if( $input['url_method'] != NULL ) { $options['url_method'] = $input['url_method']; }
 	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = $input['bitly_username']; }
