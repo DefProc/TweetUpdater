@@ -97,6 +97,13 @@ function tweet_updater_options_page()
 		fieldset	{ margin: 20px 0; border: 1px solid #cecece; padding: 15px; }
 	</style>
 <?php	
+	
+	//If bit.ly is selected, but no account information is present, show a warning
+	if ( $options['url_method'] == 'bitly' && ( empty( $options['bitly_username'] ) || empty( $options['bitly_appkey'] ) ) )
+	{
+		echo "<div class='error'><p><strong>Bit.ly is selected, but Bit.ly account information is missing.</strong></p></div>";
+	}
+	
 	//Twitter Authorisation form
 ?>
 	<div class="wrap">
@@ -244,8 +251,6 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 	//Section 3: Short Url service
 	add_settings_section('tweet_updater_short_url', 'Short URL Service:', 'tweet_updater_short_url', 'short_url');
 		add_settings_field('tweet_updater_chose_url', 'Use a #url# from which provider?', 'tweet_updater_chose_url1', 'short_url', 'tweet_updater_short_url');
-		add_settings_field('tweet_updater_bitly_username', 'Bit.ly Username', 'tweet_updater_bitly_username', 'short_url', 'tweet_updater_short_url');
-		add_settings_field('tweet_updater_bitly_appkey', 'Bit.ly Appkey', 'tweet_updater_bitly_appkey', 'short_url', 'tweet_updater_short_url');
 
 	//Section 4: Use CURL to get short_url?
 	add_settings_section('tweet_updater_url_method', 'Use cURL to get external short_urls?', 'tweet_updater_url_method', 'url_method');
@@ -311,27 +316,13 @@ function tweet_updater_edited_format()
 
 //Short Url service
 function tweet_updater_short_url()
-	{ echo "<p>Set the url shortener properties. </p>"; }
+	{ echo "<p>Set the URL shortener properties. Chose from either in internal or external URL source.</p>"; }
 function tweet_updater_chose_url1()
 { 	$options = get_option('tweet_updater_options'); 
 	
-	echo "<ul>";
+	echo "<h4>Internal URL sources:</h4>
+		<ul>";
 	
-	// ZZ.GD
-	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='zzgd'";
-	if( $options['url_method'] == 'zzgd' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>ZZ.GD</label></li>"; 
-
-	// TinyURL
-	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='tinyurl'";
-	if( $options['url_method'] == 'tinyurl' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>TinyURL</label></li>";	
-
-	//Bit.ly
-	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='bitly'";
-	if( $options['url_method'] == 'bitly' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>Bit.ly (set account details below)</label></li>";
-
 	// la_petite_url plugin
 	if( function_exists('get_la_petite_url_permalink') )
 	{
@@ -345,13 +336,38 @@ function tweet_updater_chose_url1()
 	if( $options['url_method'] == 'permalink' ) { echo " checked='true'"; };
 	echo " /><label for='tweet_updater_chose_url'>WordPress Permalink (Warning: the number of characters is not checked by TweetUpdater)</label></li>";
 
+	echo "</ul>
+		<h4>External URL Shortening Service:</h4>
+		<ul>";
+
+	//Bit.ly
+	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='bitly'";
+	if( $options['url_method'] == 'bitly' ) { echo " checked='true'"; };
+	echo " /><label for='tweet_updater_chose_url'><a href='http://bit.ly/a/your_api_key'>Bit.ly</a> (set your account details below)</label>";
+		//Bit.ly Options
+		echo "	<ul style='margin-left: 3em; margin-top: 0.5em;'>
+			<li><label for='tweet_updater_bitly_username'>Username: </label><input id='tweet_updater_bitly_username' type='text' size='20' name='tweet_updater_options[bitly_username]' value='{$options['bitly_username']}' /></li>
+			<li><label for='tweet_updater_bitly_appkey'>API Key: </label><input id='tweet_updater_bitly_appkey' type='text' size='50' name='tweet_updater_options[bitly_appkey]' value='{$options['bitly_appkey']}' /></li>
+			</ul>";
+	echo "</li>";
+	
+	// Stwnsh
+	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='stwnsh'";
+	if( $options['url_method'] == 'stwnsh' ) { echo " checked='true'"; };
+	echo " /><label for='tweet_updater_chose_url'><a href='http://stwnsh.com/'>Stwnsh</a>,  A Welsh language service.</label></li>"; 
+
+	// TinyURL
+	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='tinyurl'";
+	if( $options['url_method'] == 'tinyurl' ) { echo " checked='true'"; };
+	echo " /><label for='tweet_updater_chose_url'><a href='http://www.tinyurl.com/'>TinyURL</a></label></li>";	
+
+	// ZZ.GD
+	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='zzgd'";
+	if( $options['url_method'] == 'zzgd' ) { echo " checked='true'"; };
+	echo " /><label for='tweet_updater_chose_url'><a href='http://zz.gd/'>ZZ.GD</a></label></li>"; 
+
 	echo "</ul>";
 }
-function tweet_updater_bitly_username()
-	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_bitly_username' type='text' size='30' name='tweet_updater_options[bitly_username]' value='{$options['bitly_username']}' />"; }
-function tweet_updater_bitly_appkey()
-	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_bitly_appkey' type='text' size='30' name='tweet_updater_options[bitly_appkey]' value='{$options['bitly_appkey']}' />"; }
-
 
 //Alternative short url retrieval method
 function tweet_updater_url_method()
