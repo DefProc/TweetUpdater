@@ -6,6 +6,8 @@ Author: Patrick Fenner
 
 * Add "limit by category or custom field" (LimitCategory Branch) - From (BjornW)[http://burobjorn.nl/]
 
+= 3.0.1 =
+
 * Rearranged URL selection to internal/external sources.
 * Added Welsh language URL shortener - From Gareth Jones, (Stwnsh)[http://stwnsh.com/].
 * Added warning if Bit.ly is selected without API credentials.

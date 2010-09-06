@@ -1,7 +1,7 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.0
-Stable tag: 3.0
+Version: 3.0.1
+Stable tag: 3.0.1
 Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
 Requires at least: 3.0.1
 Tested up to: 3.0.1
@@ -16,10 +16,17 @@ post is updated; as you choose.
 The tweet format is flexible, with placeholders for title and URL. URLs can be included from a variety of sources. In addition to full 
 post permalinks (standard or friendly urls as selected in your site setup) the following short url services are supported:
 
-* ZZ.GD
-* TinyURL
-* Bit.ly
+Internal:
+
 * [la petite url](http://wordpress.org/extend/plugins/le-petite-url/) plugin
+* WordPress Permalink
+
+External:
+
+* Bit.ly
+* Stwnsh
+* TinyURL
+* ZZ.GD
 
 Derived from the original TwitterUpdater, version 3 has been fully rewritten to include OAuth authorisation with Twitter; because basic
 authentication (username & password) has now been deactivated for applications using the Twitter API. 
@@ -102,11 +109,21 @@ haven't tried it.
 
 == Upgrade Notice ==
 
+= 3.0.1 =
+
+Added (Stwnsh)[http://stwnsh.com/] Welsh language shortener
+
 = 3.0 =
 
 Stable release for WP 3.0.1
 
 == Changelog ==
+
+= 3.0.1 = 
+
+* Rearranged URL selection to internal/external sources.
+* Added Welsh language URL shortener - From Gareth Jones, (Stwnsh)[http://stwnsh.com/].
+* Added warning if Bit.ly is selected without API credentials.
 
 = 3.0 =
 
