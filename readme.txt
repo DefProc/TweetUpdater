@@ -6,11 +6,11 @@ Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, shor
 Requires at least: 3.0.1
 Tested up to: 3.0.1
 
-Send tweets when a post is published or updated; uses OAuth. Will add short URL from a plugin, or generate from an external service.
+Send messages to Twitter when a post is published or updated; uses OAuth. Will add a short URL from a plugin, or from an external service.
 
 == Description ==
 
-TweetUpdater will send a tweet from you WordPress installation whenever a new post is published, or when a previously published 
+TweetUpdater will send a Twitter message from you WordPress installation whenever a new post is published, or when a previously published 
 post is updated; as you choose. 
 
 The tweet format is flexible, with placeholders for title and URL. URLs can be included from a variety of sources. In addition to full 
@@ -122,12 +122,10 @@ Stable release for WP 3.0.1
 = 3.0.1 = 
 
 * Rearranged URL selection to internal/external sources.
-* Added Welsh language URL shortener - From Gareth Jones, (Stwnsh)[http://stwnsh.com/].
+* Added Welsh language URL shortener - From Gareth Jones, [Stwnsh](http://stwnsh.com/).
 * Added warning if Bit.ly is selected without API credentials.
 
 = 3.0 =
-
-Changed name to *TweetUpdater*
 
 * Changed name to *TweetUpdater*
 * Uses OAuth as the Twitter account authentication method. (Uses the TwitterAuth php library from [Abraham](http://github.com/abraham/twitteroauth))
