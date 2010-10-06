@@ -303,7 +303,7 @@ function tweet_updater_new_post()
 function tweet_updater_newpost_update()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_newpost_update' type='checkbox' name='tweet_updater_options[newpost_update]' value='1'"; if( $options['newpost_update'] == '1' ) { echo " checked='true'"; }; echo " />"; }
 function tweet_updater_newpost_format()
-	{ global $tweet_updater_placeholders; $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_newpost_format' type='text' size='60' maxlength='146' name='tweet_updater_options[newpost_format]' value='{$options['newpost_format']}' />" . $tweet_updater_placeholders; }
+	{ global $tweet_updater_placeholders; $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_newpost_format' type='text' size='60' maxlength='100' name='tweet_updater_options[newpost_format]' value='{$options['newpost_format']}' />" . $tweet_updater_placeholders; }
 
 //Updated Post
 function tweet_updater_edited_post()
@@ -311,7 +311,7 @@ function tweet_updater_edited_post()
 function tweet_updater_edited_update()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_edited_update' type='checkbox' name='tweet_updater_options[edited_update]' value='1'"; if( $options['edited_update'] == '1' ) { echo " checked='true'"; }; echo " />"; }
 function tweet_updater_edited_format()
-	{ global $tweet_updater_placeholders; $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_edited_format' type='text' size='60' maxlength='146' name='tweet_updater_options[edited_format]' value='{$options['edited_format']}' />" . $tweet_updater_placeholders; }
+	{ global $tweet_updater_placeholders; $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_edited_format' type='text' size='60' maxlength='100' name='tweet_updater_options[edited_format]' value='{$options['edited_format']}' />" . $tweet_updater_placeholders; }
 
 
 //Short Url service
