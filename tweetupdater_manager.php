@@ -208,6 +208,19 @@ function tweet_updater_options_page()
 		</form>
 	</div>
 
+
+<?php 
+/* debug code to check database values */
+echo "<p>\$tokens: <br /><pre>";
+print_r( $tokens );
+echo "</pre></p>";
+echo "<p>\$options: <br /><pre>";
+print_r( $options );
+echo "</pre></p>"; 
+/* end */
+?>
+
+
 <?php
 }
 
@@ -333,12 +346,19 @@ function tweet_updater_limit_activate()
 function tweet_updater_limit_to_category() 
 	{
 	$options = get_option('tweet_updater_options');
-	$args = array( 
-		'name' => 'tweet_updater_options[limit_to_category]',
-		'selected' => $options['limit_to_category'],
-		'show_option_none' => 'Do not limit to any category'  
-			);
-	wp_dropdown_categories($args);
+	$categories=get_categories( array( 'orderby'=>'name', 'order'=>'ASC' ) );
+	
+	echo "<ul>";
+		foreach($categories as $category) 
+		{
+			echo "<li>";
+			echo "<input id='tweet_updater_limit_limit_to_category_" . $category->name . "' type='checkbox' name='tweet_updater_options[limit_to_category][" . $category->name . "]' value='1'"; 
+			if( $options['limit_limit_to_category'][$category->name] == '1' ) { echo " checked='true'"; }; 
+			echo " />";
+			echo "<label for='tweet_updater_limit_limit_to_category_" . $category->name . "'>" . $category->name . "</label>";
+			echo "</li>";
+		}
+	echo "</ul>";
 	}
 function tweet_updater_limit_to_customfield()
 	{

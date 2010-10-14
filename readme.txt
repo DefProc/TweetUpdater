@@ -1,7 +1,7 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.0
-Stable tag: 3.0
+Version: 3.2.alpha
+Stable tag: 3.0.1
 Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
 Requires at least: 3.0.1
 Tested up to: 3.0.1
@@ -20,6 +20,8 @@ post permalinks (standard or friendly urls as selected in your site setup) the f
 * TinyURL
 * Bit.ly
 * [la petite url](http://wordpress.org/extend/plugins/le-petite-url/) plugin
+
+Posts can be ommited from being tweeted based on their category.
 
 Derived from the original TwitterUpdater, version 3 has been fully rewritten to include OAuth authorisation with Twitter; because basic
 authentication (username & password) has now been deactivated for applications using the Twitter API. 
