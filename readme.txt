@@ -1,6 +1,6 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.0.1
+Version: 3.0.2
 Stable tag: 3.0.1
 Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
 Requires at least: 3.0.1
@@ -20,6 +20,10 @@ Internal:
 
 * [la petite url](http://wordpress.org/extend/plugins/le-petite-url/) plugin
 * WordPress Permalink
+
+Generic shorteners
+
+* YOURLS
 
 External:
 
