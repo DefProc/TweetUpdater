@@ -115,18 +115,12 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 	
 	//check string length and trim title if necessary (max $tweet_format length without placeholders is 100 chars)
 	preg_match_all( '/#[a-z]{3,5}#/', $tweet, $placeholders, PREG_SET_ORDER);
-	
-//	echo"<p><pre>";
-//	print_r($placeholders);
-//	echo "</pre></p>";
 
 	if ( $placeholders != NULL )
 	{
 		$tweet_length = strlen($tweet);
 		$title_length = strlen($title);
 		$url_length = strlen($short_url);
-		
-//		echo "<div><p>Tweet length = " . $tweet_length . " <br />Title length = " . $title_length . " <br />Url length = " . $url_length . "</p></div>";
 		
 		//calculate the final tweet length
 		foreach ($placeholders as $val) 
@@ -146,20 +140,13 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 		
 		//If the tweet is too long, reduce the length of the placeholders in order of increasing importance
 		
-//		echo "<div><p>Title count = " . $title_count . " <br />Url count = " . $url_count . "<br />";
-		
 		//if too long, trim the title (if the placeholder was used)
 		if ( $tweet_length > 140 && isset($title_count) && $title_count > 0 )
 		{
-//			echo "<div id='message' class='error'><p>Trimming Title: <br />Tweet length = " . $tweet_length . " <br />Title length = " . $title_length . " <br />Title_count = " . $title_count . "<br />";
 			$max_title_length = $title_length-(($tweet_length-140)/$title_count);
 			$max_title_length = floor($max_title_length);
 			
-//			echo "Max title length = " . $max_title_length . "<br /></div>";
-			
 			if ( $max_title_length > 0 ) { $title = substr( $title, 0, $max_title_length ); } else { $title = ''; }
-			
-//			echo "Title = " . $title . "</p></div>";
 			
 			$tweet_length = $tweet_length-(($title_length+strlen($title))*$title_count);
 		}
@@ -174,8 +161,6 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 	//do the placeholder string replace
 	$tweet = str_replace ( '#title#', $title, $tweet);
 	$tweet = str_replace ( '#url#', $short_url, $tweet);
-	
-//	echo "<div class='message'><p>Tweet reads: <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $tweet . "</p></div>";
 	
 	return $tweet;
 }
