@@ -2,7 +2,7 @@
 /*
 Plugin Name: TweetUpdater
 Description: Update your Twitter status when you publish or update a post. Based on TwitterUpdater v1.0 by <a href="http://blog.victoriac.net/ja/geek/twitter-updater">Victoria Chan</a>
-Version: 3.0.1
+Version: 3.0.2
 Author: Patrick Fenner (Def-Proc.co.uk)
 Author URI: http://www.deferredprocrastination.co.uk/
 Plugin URI: http://www.deferredprocrastination.co.uk/projects/tweetupdater
@@ -179,8 +179,53 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 		$short_url = tu_get_shorturl($use_curl,$short_url['url_method'],$link,$post_ID); 
 	}
 
-	// Additional error handing is possible: returning $tweet = ''; will cause sending to be aborted.
+	// Additional error handing is possible: if $tweet is empty, sending will be aborted.
+	
+	//check string length and trim title if necessary (max $tweet_format length without placeholders is 100 chars)
+	preg_match_all( '/#[a-z]{3,5}#/', $tweet, $placeholders, PREG_SET_ORDER);
 
+	if ( $placeholders != NULL )
+	{
+		$tweet_length = strlen($tweet);
+		$title_length = strlen($title);
+		$url_length = strlen($short_url);
+		
+		//calculate the final tweet length
+		foreach ($placeholders as $val) 
+		{
+			if ( "$val[0]" == "#url#" )
+			{
+				$tweet_length = $tweet_length-5+$url_length;
+				$url_count++;
+			}
+			elseif ( "$val[0]" == "#title#" )
+			{
+				$tweet_length = $tweet_length-7+$title_length;
+				$title_count++;
+			}
+
+		}
+		
+		//If the tweet is too long, reduce the length of the placeholders in order of increasing importance
+		
+		//if too long, trim the title (if the placeholder was used)
+		if ( $tweet_length > 140 && isset($title_count) && $title_count > 0 )
+		{
+			$max_title_length = $title_length-(($tweet_length-140)/$title_count);
+			$max_title_length = floor($max_title_length);
+			
+			if ( $max_title_length > 0 ) { $title = substr( $title, 0, $max_title_length ); } else { $title = ''; }
+			
+			$tweet_length = $tweet_length-(($title_length+strlen($title))*$title_count);
+		}
+		
+		//if still too long, force a url shortener
+		if ($tweet_length > 140)
+		{
+			$short_url = tu_get_shorturl($use_curl,'tinyurl',$link,$post_ID); 
+		}
+	}
+	
 	//do the placeholder string replace
 	$tweet = str_replace ( '#title#', $title, $tweet);
 	$tweet = str_replace ( '#url#', $short_url, $tweet);
