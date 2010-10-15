@@ -52,6 +52,10 @@ function tweet_updater_activate()
 		'url_method' => 'tinyurl',
                 'bitly_username' => '',
                 'bitly_appkey' => '',
+		'yourls_url' => 'http://',
+		'yourls_username' => '',
+		'yourls_passwd' => '',
+		'yourls_token' => '',
 				);
 	
 	add_option( 'tweet_updater_options', $options_default, '', 'no' );
@@ -106,6 +110,12 @@ function tweet_updater_options_page()
 	if ( $options['url_method'] == 'bitly' && ( empty( $options['bitly_username'] ) || empty( $options['bitly_appkey'] ) ) )
 	{
 		echo "<div class='error'><p><strong>Bit.ly is selected, but Bit.ly account information is missing.</strong></p></div>";
+	}
+	
+	//If YOURLS is selected, but no API address is entered, show a warning
+	if ( $options['url_method'] == 'yourls' && $options['yourls_url'] == 'http://' )
+	{
+		echo "<div class='error'><p><strong>YOURLS is selected, but an the API address is missing.</strong></p></div>";
 	}
 	
 	//Twitter Authorisation form
@@ -403,6 +413,28 @@ function tweet_updater_chose_url1()
 	echo " /><label for='tweet_updater_chose_url'>WordPress Permalink (Warning: the number of characters is not checked by TweetUpdater)</label></li>";
 
 	echo "</ul>
+		<h4>Generic URL Shortening Engine:</h4>
+		<ul>";
+
+	//Bit.ly
+	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='yourls'";
+	if( $options['url_method'] == 'yourls' ) { echo " checked='true'"; };
+	echo " /><label for='tweet_updater_chose_url'><a href='http://yourls.org/'>YOURLS: Your Own URL Shortener</a>. A php URL shortener that powers many small and self-hosted services.</label>";
+		//Bit.ly Options
+		echo "	<ul style='margin-left: 3em; margin-top: 0.5em;'>
+			<li><label for='tweet_updater_yourls_url'>API page address:</label><input id='tweet_updater_yourls_url' type='text' size='60' name='tweet_updater_options[yourls_url]' value='{$options['yourls_url']}' /></li>
+			<li><label>When the YOURLS API is set to 'private' include either: Signature Token or: Username & Password</label>
+			<ul style='margin-left: 3em; margin-top: 0.5em;'>
+				<li><label for='tweet_updater_yourls_token'>Signature Token (preferred): </label><input id='tweet_updater_yourls_token' type='text' size='30' name='tweet_updater_options[yourls_token]' value='{$options['yourls_token']}' /></li>
+				<li><label>or:</label></li>
+				<li><label for='tweet_updater_yourls_username'>Username: </label><input id='tweet_updater_yourls_username' type='text' size='30' name='tweet_updater_options[yourls_username]' value='{$options['yourls_username']}' /></li>
+				<li><label for='tweet_updater_yourls_passwd'>Password: </label><input id='tweet_updater_yourls_passwd' type='text' size='30' name='tweet_updater_options[yourls_passwd]' value='{$options['yourls_passwd']}' /></li>
+			</ul></li>
+			</ul>";
+	echo "</li>";
+
+
+	echo "</ul>
 		<h4>External URL Shortening Service:</h4>
 		<ul>";
 
@@ -481,11 +513,16 @@ function tweet_updater_options_validate($input)
 	if( !empty( $input['limit_to_category'] ) ) 	{ $options['limit_to_category'] = $input['limit_to_category']; }
 	if( !empty( $input['limit_to_custom_field_key'] ) ) { $options['limit_to_custom_field_key'] = $input['limit_to_custom_field_key']; }
 	if( !empty( $input['limit_to_custom_field_val'] ) ) { $options['limit_to_custom_field_val'] = $input['limit_to_custom_field_val']; }
-	if( !empty( $input['use_curl'] ) ) 		{ $options['use_curl'] = 	$input['use_curl']; } else { $options['use_curl'] = '0'; }
-	if( !empty( $input['url_method'] ) ) 		{ $options['url_method'] = 	$input['url_method']; }
-	if( !empty( $input['bitly_username'] ) ) 	{ $options['bitly_username'] = 	$input['bitly_username']; }
-	if( !empty( $input['bitly_appkey'] ) ) 		{ $options['bitly_appkey'] = 	$input['bitly_appkey']; }
 
+	if( $input['use_curl'] != NULL ) { $options['use_curl'] = $input['use_curl']; } else { $options['use_curl'] = '0'; }
+	if( $input['url_method'] != NULL ) { $options['url_method'] = $input['url_method']; }
+	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = $input['bitly_username']; }
+	if( isset( $input['bitly_appkey'] ) ) { $options['bitly_appkey'] = $input['bitly_appkey']; }
+	if( isset( $input['yourls_url'] ) ) { $options['yourls_url'] = $input['yourls_url']; } else { $options['yourls_url'] = 'http://'; }
+	if( isset( $input['yourls_username'] ) ) { $options['yourls_username'] = $input['yourls_username']; }
+	if( isset( $input['yourls_passwd'] ) ) { $options['yourls_passwd'] = $input['yourls_passwd']; }
+	if( isset( $input['yourls_token'] ) ) { $options['yourls_token'] = $input['yourls_token']; }
+	
 	return $options;
 }
 

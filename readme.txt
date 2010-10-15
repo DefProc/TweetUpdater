@@ -21,6 +21,10 @@ Internal:
 * [la petite url](http://wordpress.org/extend/plugins/le-petite-url/) plugin
 * WordPress Permalink
 
+Generic shorteners
+
+* YOURLS
+
 External:
 
 * Bit.ly

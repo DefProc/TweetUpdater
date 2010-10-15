@@ -260,6 +260,71 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 		$short_url = $link; 
 	}
 
+	//Generic Shortener Engines
+	
+	else if ( $url_method == 'yourls' )
+	{
+		$options = get_option('tweet_updater_options');
+		
+		if ( !empty($options['yourls_token']) )
+		{
+			$timestamp = time();
+			
+			$attributes = array(     // Data to POST
+					'url'      => $link,
+					'keyword'  => '',
+					'format'   => 'json',
+					'action'   => 'shorturl',
+					'timestamp' => $timestamp,
+					'signature' => md5( $timestamp . $options['yourls_token'] ),
+						);
+			
+			//echo '<div class="warning"><p>Yourls details: <br /><pre>' . print_r($attributes, true) . '</pre></p></div>';
+			
+			$response = tweet_updater_get_file_contents($options['yourls_url'], 'POST', $attributes); 
+		}
+		else if ( !empty($options['yourls_username']) && !empty($options['yourls_passwd']) )
+		{
+			$attributes = array(     // Data to POST
+					'url'      => $link,
+					'keyword'  => '',
+					'format'   => 'json',
+					'action'   => 'shorturl',
+					'username' => $options['yourls_username'],
+					'password' => $options['yourls_passwd'],
+						);
+			
+			//echo '<div class="warning"><p>Yourls details: <br /><pre>' . print_r($attributes, true) . '</pre></p></div>';
+			
+			$response = tweet_updater_get_file_contents($options['yourls_url'], $method='POST', $attributes); 
+		}
+		else
+		{
+			$target_url = $options['yourls_url'] . "?format=json&action=shorturl&url=" . urlencode($link) ;
+			
+			$response = tweet_updater_get_file_contents($target_url);
+		}
+		
+		$json = json_decode($response,true);
+		
+		if ( $json['statusCode'] == "200" )
+		{
+			$short_url = $json['shorturl'];
+			//echo '<div id="message" class="warning"><p>Yourls details: <br /><pre>' . print_r($json, true) . '</pre></p></div>';
+		}
+		else 
+		{
+			$short_url = array( 
+				'error_code' => '1',
+				'error_message' => 'No url returned. Repeat with default method.', 
+				'url_method' => 'tinyurl',
+						);
+			
+			//echo '<div id="message" class="error"><p>YOURLS failed, returned: <br /><pre>' . print_r($json, true) . '</pre></p></div>';
+			
+		}
+	}
+	
 	//External URL shorteners:
 	else if ( $url_method == 'bitly' ) 
 	{
@@ -349,6 +414,25 @@ function file_get_contents_curl($target_url)
 	curl_close($ch);
 
 	return $data;
+}
+
+/* Wordress alternative to file_get_contents - server independent*/
+
+function tweet_updater_get_file_contents( $url, $method='GET', $body=array(), $headers=array() ) {
+	if( !class_exists( 'WP_Http' ) )
+		include_once( ABSPATH . WPINC. '/class-http.php' );
+	$request = new WP_Http;
+	$result = $request->request( $url , array( 'method'=>$method, 'body'=>$body, 'headers'=>$headers, 'user-agent'=>'TweetUpdater - http://def-proc.co.uk/projects/tweetupdater' ) );
+
+	if ( !is_wp_error($result) && isset($result['body']) ) 
+	{
+		return $result['body'];
+	} 
+	else 
+	{
+		echo '<div id="message" class="error"><p>tweet_updater_get_file_contents returned: <br /><pre>' . print_r($result, true) . '</pre></p></div>';
+		return false;
+	}
 }
 
 
