@@ -8,7 +8,8 @@ Author: Patrick Fenner
 ---
 
 * Added "limit by category or custom field" (LimitCategory Branch) - From [BjornW](http://burobjorn.nl/)
-* Added tweet length checking, will trim title and 
+* Added tweet length checking, will trim title and auto-shorten long urls to keep tweets under 140 characters.
+* Added generic [YOURLS](http://yourls.org) shortener support - for both public and private installations. Can use timestamp-hashed secret keys (preferred) or usename/password combo (sent plaintext).
 
 3.0.1
 -----

@@ -103,8 +103,6 @@ function tweet_updater_is_tweetable($post, $options)
 		{
 			$post_categories = wp_get_post_categories($post->ID);
 			
-			//echo "Post Categories = <br /><pre>" . print_r($post_categories, true) . "</pre><br />";
-			
 			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
 			{
 				foreach( $options['limit_to_category'] as $key => $value )
@@ -114,13 +112,9 @@ function tweet_updater_is_tweetable($post, $options)
 						//echo "in cat: TRUE";
 						return true;
 					} 
-					//else 
-					//{
-					//	echo "\$value ($value) is not in \$post_categories array, or \$value ($value) <= 0.<br />"; 
-					//}
 				}
-			} //else { echo "\$post_categories is not array, or has no size."; }
-		} //else { echo "limit_to_category is not array, or has no size."; } 
+			} 
+		} 
 		
 		// Ok, no category found so continue with checking for the custom fields 
 		if( !empty( $options['limit_to_custom_field_key'] ) ) 
@@ -150,14 +144,12 @@ function tweet_updater_is_tweetable($post, $options)
 		}
 
 		// in all other cases return false
-		//echo "no matches: false";
 		return false;
 
 	} 
 	else 
 	{
 		// limit is not active so everything is tweetable
-		//echo "limiter inactive: false";
 		return true;
 	} 
 }
@@ -250,8 +242,8 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 			// send error message
 			$short_url = array( 
 				'error_code' => '1',
-				'error_message' => 'Function deactivated. Repeat with another method.', 
-				'url_method' => 'tinyurl',
+				'error_message' => 'Function deactivated. Repeat with default method.', 
+				'url_method' => 'default',
 						);
 		}
 	}
@@ -279,8 +271,6 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 					'signature' => md5( $timestamp . $options['yourls_token'] ),
 						);
 			
-			//echo '<div class="warning"><p>Yourls details: <br /><pre>' . print_r($attributes, true) . '</pre></p></div>';
-			
 			$response = tweet_updater_get_file_contents($options['yourls_url'], 'POST', $attributes); 
 		}
 		else if ( !empty($options['yourls_username']) && !empty($options['yourls_passwd']) )
@@ -293,8 +283,6 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 					'username' => $options['yourls_username'],
 					'password' => $options['yourls_passwd'],
 						);
-			
-			//echo '<div class="warning"><p>Yourls details: <br /><pre>' . print_r($attributes, true) . '</pre></p></div>';
 			
 			$response = tweet_updater_get_file_contents($options['yourls_url'], $method='POST', $attributes); 
 		}
@@ -310,18 +298,14 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 		if ( $json['statusCode'] == "200" )
 		{
 			$short_url = $json['shorturl'];
-			//echo '<div id="message" class="warning"><p>Yourls details: <br /><pre>' . print_r($json, true) . '</pre></p></div>';
 		}
 		else 
 		{
 			$short_url = array( 
 				'error_code' => '1',
 				'error_message' => 'No url returned. Repeat with default method.', 
-				'url_method' => 'tinyurl',
+				'url_method' => 'default',
 						);
-			
-			//echo '<div id="message" class="error"><p>YOURLS failed, returned: <br /><pre>' . print_r($json, true) . '</pre></p></div>';
-			
 		}
 	}
 	
@@ -331,7 +315,7 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 		$options = get_option('tweet_updater_options');
 		$short_url = tu_make_bitly_url($link,$options['bitly_username'],$options['bitly_appkey'],$use_curl);
 	}
-	else if ( $url_method == 'tinyurl' ) 
+	else if ( $url_method == 'tinyurl' || $url_method == 'default' ) //set tinyurl as default shortener
 	{
 		$target_url = "http://tinyurl.com/api-create.php?url=" . $link;
 		if ( $use_curl == '1' ) 
@@ -400,7 +384,7 @@ function tu_make_bitly_url($link,$login,$appkey,$use_curl)
 
 
 /* alternative funtion to file_get_contents(), using cURL */
-
+// CURL removed v_3.1.alpha2 changed to WP native - WP_Http - to remove server dependancies
 function file_get_contents_curl($target_url) 
 {
 	$ch = curl_init();

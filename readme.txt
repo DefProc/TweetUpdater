@@ -2,7 +2,7 @@
 Contributors: DefProc
 Version: 3.1.alpha
 Stable tag: 3.0.1
-Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
+Tags: twitter, message, tweet, status, update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update, YOURLS, bit.ly, Stwnsh, TinyURL, ZZ.GD
 Requires at least: 3.0.1
 Tested up to: 3.0.1
 
@@ -10,13 +10,13 @@ Send messages to Twitter when a post is published or updated; uses OAuth. Will a
 
 == Description ==
 
-TweetUpdater will send a Twitter message from you WordPress installation whenever a new post is published, or when a previously published 
+TweetUpdater will send a message to your Twitter account, from you WordPress installation, whenever a new post is published, or when a previously published 
 post is updated; as you choose. 
 
 The tweet format is flexible, with placeholders for title and URL. URLs can be included from a variety of sources. In addition to full 
 post permalinks (standard or friendly urls as selected in your site setup) the following short url services are supported:
 
-Internal:
+Internal services:
 
 * [la petite url](http://wordpress.org/extend/plugins/le-petite-url/) plugin
 * WordPress Permalink
@@ -25,14 +25,14 @@ Generic shorteners
 
 * YOURLS
 
-External:
+External services:
 
 * Bit.ly
 * Stwnsh
 * TinyURL
 * ZZ.GD
 
-Posts can be ommited from being tweeted based on their category.
+Posts tweeting can be ommited based on post category, or custom field, or custom field and value pair.
 
 Derived from the original TwitterUpdater, version 3 has been fully rewritten to include OAuth authorisation with Twitter; because basic
 authentication (username & password) has now been deactivated for applications using the Twitter API. 
@@ -115,6 +115,14 @@ haven't tried it.
 
 == Upgrade Notice ==
 
+= 3.1 = 
+
+Added option to limit twitter message sending to selected categories or custom field/value
+
+Added tweet length checking, will trim title and auto-shorten long urls to keep tweets under 140 characters.
+
+Added generic [YOURLS](http://yourls.org) shortener support - for both public and private installations.
+
 = 3.0.1 =
 
 Added (Stwnsh)[http://stwnsh.com/] Welsh language shortener
@@ -124,6 +132,13 @@ Added (Stwnsh)[http://stwnsh.com/] Welsh language shortener
 Stable release for WP 3.0.1
 
 == Changelog ==
+
+= 3.1 = 
+
+* Added "limit by category or custom field" (LimitCategory Branch) - From [BjornW](http://burobjorn.nl/)
+* Added tweet length checking, will trim title and auto-shorten long urls to keep tweets under 140 characters.
+* Added generic [YOURLS](http://yourls.org) shortener support - for both public and private installations. Can use timestamp-hashed secret keys (preferred) or usename/password combo (sent plaintext).
+
 
 = 3.0.1 = 
 

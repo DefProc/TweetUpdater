@@ -45,20 +45,40 @@ function tweet_updater_activate()
 		'edited_update' => '1',
 		'edited_format' => 'Updated blog post: #title#: #url#',
 		'limit_activate' => '0',
-		'limit_to_category' => '-1',
+		'limit_to_category' => array(),
 		'limit_to_custom_field_key' => '',
 		'limit_to_custom_field_val' => '',
 		'use_curl' => '1',
-		'url_method' => 'tinyurl',
+		'url_method' => 'default',
                 'bitly_username' => '',
                 'bitly_appkey' => '',
 		'yourls_url' => 'http://',
 		'yourls_username' => '',
 		'yourls_passwd' => '',
 		'yourls_token' => '',
+		'show_debug' => '1', //show database entries on settings page
 				);
 	
 	add_option( 'tweet_updater_options', $options_default, '', 'no' );
+	
+	// Load any new option defaults into the original options array
+	$current_options = get_option('tweet_updater_options');
+	
+	// Check all options from the default array exist in the current array. If not, load the default values.
+	// (checking this way _should_ eliminate any old items that are not in the default array - but none have been removed yet.)
+	foreach( $options_default as $key => $value )
+	{
+		if( !isset($current_options[$key]) )
+		{
+			$new_options[$key] = $options_default[$key];
+		}
+		else
+		{
+			$new_options[$key] = $current_options[$key];
+		}
+	}
+	
+	update_option( 'tweet_updater_options', $new_options );
 }
 
 
@@ -115,7 +135,7 @@ function tweet_updater_options_page()
 	//If YOURLS is selected, but no API address is entered, show a warning
 	if ( $options['url_method'] == 'yourls' && $options['yourls_url'] == 'http://' )
 	{
-		echo "<div class='error'><p><strong>YOURLS is selected, but an the API address is missing.</strong></p></div>";
+		echo "<div class='error'><p><strong>YOURLS is selected, but an API page address is missing.</strong></p></div>";
 	}
 	
 	//Twitter Authorisation form
@@ -220,14 +240,17 @@ function tweet_updater_options_page()
 
 
 <?php 
-/* debug code to check database values */
-echo "<p>\$tokens: <br /><pre>";
-print_r( $tokens );
-echo "</pre></p>";
-echo "<p>\$options: <br /><pre>";
-print_r( $options );
-echo "</pre></p>"; 
-/* end */
+	/* debug code to check database values */
+	if( $options['show_debug'] == 1 )
+	{
+		echo "<p>\$tokens: <br /><pre>";
+		print_r( $tokens );
+		echo "</pre></p>";
+		echo "<p>\$options: <br /><pre>";
+		print_r( $options );
+		echo "</pre></p>"; 
+	}
+	/* end */
 ?>
 
 
@@ -404,13 +427,13 @@ function tweet_updater_chose_url1()
 	{
 		echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='petite'";
 		if( $options['url_method'] == 'petite' ) { echo " checked='true'"; };
-		echo " /><label for='tweet_updater_chose_url'>la_petite_url plugin. <a href='options-general.php?page=le-petite-url/la-petite-url-options.php'>Settings</a></label></li>"; 
+		echo " /><label for='tweet_updater_chose_url'>la_petite_url plugin. (<a href='options-general.php?page=le-petite-url/la-petite-url-options.php'>Settings</a>)</label></li>"; 
 	}
 
 	// Full length WordPress Permalink
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='permalink'";
 	if( $options['url_method'] == 'permalink' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>WordPress Permalink (Warning: the number of characters is not checked by TweetUpdater)</label></li>";
+	echo " /><label for='tweet_updater_chose_url'>WordPress Permalink (Long links may be shortened by the default service)</label></li>";
 
 	echo "</ul>
 		<h4>Generic URL Shortening Engine:</h4>
@@ -456,8 +479,8 @@ function tweet_updater_chose_url1()
 
 	// TinyURL
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='tinyurl'";
-	if( $options['url_method'] == 'tinyurl' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>TinyURL <a href='http://tinyurl.com/'>http://tinyurl.com</a></label></li>";	
+	if( $options['url_method'] == 'tinyurl' || $options['url_method'] == 'default' ) { echo " checked='true'"; };
+	echo " /><label for='tweet_updater_chose_url'>TinyURL <a href='http://tinyurl.com/'>http://tinyurl.com</a> (Default)</label></li>";	
 
 	// ZZ.GD
 	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='zzgd'";
@@ -505,23 +528,22 @@ function tweet_updater_options_validate($input)
 	
 	// The WordPress Settings API will overwrite arrays in the database with only the fields used in the form
 	// To retain all the fields, the use the changed items to update the original array.
-	if( !empty( $input['newpost_update'] ) ) 	{ $options['newpost_update'] = 	$input['newpost_update']; } else { $options['newpost_update'] = '0'; }
-	if( !empty( $input['newpost_format'] ) ) 	{ $options['newpost_format'] = 	$input['newpost_format']; }
-	if( !empty( $input['edited_update'] ) ) 	{ $options['edited_update'] = 	$input['edited_update']; } else { $options['edited_update'] = '0'; }
-	if( !empty( $input['edited_format'] ) ) 	{ $options['edited_format'] = 	$input['edited_format']; }
-	if( !empty( $input['limit_activate'] ) ) 	{ $options['limit_activate'] = 	$input['limit_activate']; }  else { $options['limit_activate'] = '0'; }
-	if( !empty( $input['limit_to_category'] ) ) 	{ $options['limit_to_category'] = $input['limit_to_category']; }
-	if( !empty( $input['limit_to_custom_field_key'] ) ) { $options['limit_to_custom_field_key'] = $input['limit_to_custom_field_key']; }
-	if( !empty( $input['limit_to_custom_field_val'] ) ) { $options['limit_to_custom_field_val'] = $input['limit_to_custom_field_val']; }
-
-	if( $input['use_curl'] != NULL ) { $options['use_curl'] = $input['use_curl']; } else { $options['use_curl'] = '0'; }
-	if( $input['url_method'] != NULL ) { $options['url_method'] = $input['url_method']; }
-	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = $input['bitly_username']; }
-	if( isset( $input['bitly_appkey'] ) ) { $options['bitly_appkey'] = $input['bitly_appkey']; }
-	if( isset( $input['yourls_url'] ) ) { $options['yourls_url'] = $input['yourls_url']; } else { $options['yourls_url'] = 'http://'; }
+	if( !empty( $input['newpost_update'] ) ) 	{ $options['newpost_update'] = 	$input['newpost_update']; } 	else { $options['newpost_update'] = '0'; }
+	if( isset( $input['newpost_format'] ) ) 	{ $options['newpost_format'] = 	$input['newpost_format']; }
+	if( !empty( $input['edited_update'] ) ) 	{ $options['edited_update'] = 	$input['edited_update']; } 	else { $options['edited_update'] = '0'; }
+	if( isset( $input['edited_format'] ) ) 	{ $options['edited_format'] = 	$input['edited_format']; }
+	if( !empty( $input['limit_activate'] ) ) 	{ $options['limit_activate'] = 	$input['limit_activate']; }  	else { $options['limit_activate'] = '0'; }
+	if( !empty( $input['limit_to_category'] ) ) 	{ $options['limit_to_category'] = $input['limit_to_category']; } else { $options['limit_to_category'] = array(); }
+	if( isset( $input['limit_to_custom_field_key'] ) ) { $options['limit_to_custom_field_key'] = $input['limit_to_custom_field_key']; }
+	if( isset( $input['limit_to_custom_field_val'] ) ) { $options['limit_to_custom_field_val'] = $input['limit_to_custom_field_val']; }
+	if( !empty( $input['use_curl'] ) ) 	{ $options['use_curl'] = 	$input['use_curl']; } 			else { $options['use_curl'] = '0'; }
+	if( isset( $input['url_method'] ) ) 	{ $options['url_method'] = 	$input['url_method']; }
+	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = 	$input['bitly_username']; }
+	if( isset( $input['bitly_appkey'] ) ) 	{ $options['bitly_appkey'] = 	$input['bitly_appkey']; }
+	if( !empty( $input['yourls_url'] ) ) 	{ $options['yourls_url'] = 	$input['yourls_url']; }			else { $options['yourls_url'] = 'http://'; }
 	if( isset( $input['yourls_username'] ) ) { $options['yourls_username'] = $input['yourls_username']; }
-	if( isset( $input['yourls_passwd'] ) ) { $options['yourls_passwd'] = $input['yourls_passwd']; }
-	if( isset( $input['yourls_token'] ) ) { $options['yourls_token'] = $input['yourls_token']; }
+	if( isset( $input['yourls_passwd'] ) ) 	{ $options['yourls_passwd'] = 	$input['yourls_passwd']; }
+	if( isset( $input['yourls_token'] ) ) 	{ $options['yourls_token'] = 	$input['yourls_token']; }
 	
 	return $options;
 }
