@@ -346,19 +346,28 @@ function tweet_updater_limit_activate()
 function tweet_updater_limit_to_category() 
 	{
 	$options = get_option('tweet_updater_options');
-	$categories=get_categories( array( 'orderby'=>'name', 'order'=>'ASC' ) );
+	$categories=get_categories( array( 'orderby'=>'name', 'order'=>'ASC' , 'hide_empty'=>'0') );
+
+	//echo "<p><pre>" . print_r($categories, true) . "</pre></p>";
 	
-	echo "<ul>";
-		foreach($categories as $category) 
-		{
-			echo "<li>";
-			echo "<input id='tweet_updater_limit_limit_to_category_" . $category->name . "' type='checkbox' name='tweet_updater_options[limit_to_category][" . $category->name . "]' value='1'"; 
-			if( $options['limit_limit_to_category'][$category->name] == '1' ) { echo " checked='true'"; }; 
-			echo " />";
-			echo "<label for='tweet_updater_limit_limit_to_category_" . $category->name . "'>" . $category->name . "</label>";
-			echo "</li>";
-		}
-	echo "</ul>";
+	if ( !empty($categories) )
+	{
+		echo "<ul>";
+			foreach($categories as $category) 
+			{
+				echo "<li>";
+				echo "<input id='tweet_updater_limit_to_category_" . $category->name . "' type='checkbox' name='tweet_updater_options[limit_to_category][" . $category->name . "]' value='" . $category->cat_ID . "'"; 
+				if( $options['limit_to_category'][$category->name] == $category->cat_ID ) { echo " checked='true'"; }; 
+				echo " />";
+				echo "<label for='tweet_updater_limit_to_category_" . $category->name . "'>" . $category->name . "</label>";
+				echo "</li>";
+			}
+		echo "</ul>";
+	}
+	else
+	{
+		echo "No categories set. You must create categories before using them as limit criterion.";
+	}
 	}
 function tweet_updater_limit_to_customfield()
 	{

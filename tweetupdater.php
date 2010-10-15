@@ -95,23 +95,32 @@ function tweet_updater_edited($post) //$post_ID)
 // or is part of a selected category
 function tweet_updater_is_tweetable($post, $options) 
 {
-	if($options['limit_activate']) 
+	if( $options['limit_activate'] == '1' ) 
 	{
 		// limiter is activated, check if the post is part of 
 		// a category which is tweetable
-		if( $options['limit_to_category'] > 0 ) 
+		if( is_array($options['limit_to_category']) && sizeof($options['limit_to_category']) > 0 ) 
 		{
 			$post_categories = wp_get_post_categories($post->ID);
 			
+			//echo "Post Categories = <br /><pre>" . print_r($post_categories, true) . "</pre><br />";
+			
 			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
 			{
-				if( in_array( $options['limit_to_category'], $post_categories ) ) 
+				foreach( $options['limit_to_category'] as $key => $value )
 				{
-					echo "in cat: TRUE";
-					return true;
-				} 
-			} 
-		} 
+					if( $value > 0 && in_array( $value, $post_categories ) ) 
+					{
+						//echo "in cat: TRUE";
+						return true;
+					} 
+					//else 
+					//{
+					//	echo "\$value ($value) is not in \$post_categories array, or \$value ($value) <= 0.<br />"; 
+					//}
+				}
+			} //else { echo "\$post_categories is not array, or has no size."; }
+		} //else { echo "limit_to_category is not array, or has no size."; } 
 		
 		// Ok, no category found so continue with checking for the custom fields 
 		if( !empty( $options['limit_to_custom_field_key'] ) ) 
@@ -123,7 +132,7 @@ function tweet_updater_is_tweetable($post, $options)
 				
 				if( !empty($custom_field_val) ) 
 				{
-					echo "key matches: true";
+					//echo "key matches: true";
 					return true;
 				} 
 			}
@@ -134,19 +143,21 @@ function tweet_updater_is_tweetable($post, $options)
 				
 				if( !empty($custom_field_val) && $custom_field_val == $options['limit_to_custom_field_val'] ) 
 				{
-					echo "fields match: true";
+					//echo "key and value match: true";
 					return true;
 				} 
 			}
 		}
 
 		// in all other cases return false
+		//echo "no matches: false";
 		return false;
 
 	} 
 	else 
 	{
 		// limit is not active so everything is tweetable
+		//echo "limiter inactive: false";
 		return true;
 	} 
 }
