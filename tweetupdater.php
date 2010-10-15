@@ -27,7 +27,6 @@ require_once('tweetupdater_manager.php');
 	/*** TweetUpdater Actions ***/
 
 
-
 /* Plugin action when status changes to publish */
 
 function tweet_updater_published($post) //$post_ID)  
@@ -35,7 +34,7 @@ function tweet_updater_published($post) //$post_ID)
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
 	
-	if ( $options['newpost_update'] == "1" )
+	if ( $options['newpost_update'] == "1" && tweet_updater_is_tweetable($post, $options) )
 	{
 		$post_ID = $post->ID;
 		$title = $post->post_title; 
@@ -61,12 +60,10 @@ function tweet_updater_published($post) //$post_ID)
 
 function tweet_updater_edited($post) //$post_ID)  
 {
-
-	
 	//load plugin preferences
 	$options = get_option('tweet_updater_options'); 
 	
-	if ( $options['edited_update'] == "1" )
+	if ( $options['edited_update'] == "1" && tweet_updater_is_tweetable($post, $options) )
 	{
 		$post_ID = $post->ID;
 		$title = $post->post_title; 
@@ -93,6 +90,77 @@ function tweet_updater_edited($post) //$post_ID)
 
 	/*** Additional Functions ***/
 
+
+// checks if the post has either a given custom field key/value
+// or is part of a selected category
+function tweet_updater_is_tweetable($post, $options) 
+{
+	if( $options['limit_activate'] == '1' ) 
+	{
+		// limiter is activated, check if the post is part of 
+		// a category which is tweetable
+		if( is_array($options['limit_to_category']) && sizeof($options['limit_to_category']) > 0 ) 
+		{
+			$post_categories = wp_get_post_categories($post->ID);
+			
+			//echo "Post Categories = <br /><pre>" . print_r($post_categories, true) . "</pre><br />";
+			
+			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
+			{
+				foreach( $options['limit_to_category'] as $key => $value )
+				{
+					if( $value > 0 && in_array( $value, $post_categories ) ) 
+					{
+						//echo "in cat: TRUE";
+						return true;
+					} 
+					//else 
+					//{
+					//	echo "\$value ($value) is not in \$post_categories array, or \$value ($value) <= 0.<br />"; 
+					//}
+				}
+			} //else { echo "\$post_categories is not array, or has no size."; }
+		} //else { echo "limit_to_category is not array, or has no size."; } 
+		
+		// Ok, no category found so continue with checking for the custom fields 
+		if( !empty( $options['limit_to_custom_field_key'] ) ) 
+		{
+			// If the custom_field_val is empty, just check the key for a match
+			if( empty( $options['limit_to_custom_field_val'] ) || $options['limit_to_custom_field_val'] == '*' )
+			{				
+				$custom_field_val = get_post_meta( $post->ID, $options['limit_to_custom_field_key'], true );
+				
+				if( !empty($custom_field_val) ) 
+				{
+					//echo "key matches: true";
+					return true;
+				} 
+			}
+			// If there's a custom_field_val, check both match
+			else if( !empty( $options['limit_to_custom_field_val'] ) )
+			{
+				$custom_field_val = get_post_meta( $post->ID, $options['limit_to_custom_field_key'], true );
+				
+				if( !empty($custom_field_val) && $custom_field_val == $options['limit_to_custom_field_val'] ) 
+				{
+					//echo "key and value match: true";
+					return true;
+				} 
+			}
+		}
+
+		// in all other cases return false
+		//echo "no matches: false";
+		return false;
+
+	} 
+	else 
+	{
+		// limit is not active so everything is tweetable
+		//echo "limiter inactive: false";
+		return true;
+	} 
+}
 
 
 /* Single function to output a formatted tweet */
