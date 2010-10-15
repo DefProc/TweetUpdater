@@ -2,7 +2,7 @@
 /*
 Plugin Name: TweetUpdater
 Description: Update your Twitter status when you publish or update a post. Based on TwitterUpdater v1.0 by <a href="http://blog.victoriac.net/ja/geek/twitter-updater">Victoria Chan</a>
-Version: 3.1.alpha
+Version: 3.1.alpha2
 Author: Patrick Fenner (Def-Proc.co.uk)
 Author URI: http://www.deferredprocrastination.co.uk/
 Plugin URI: http://www.deferredprocrastination.co.uk/projects/tweetupdater
@@ -42,7 +42,7 @@ function tweet_updater_published($post) //$post_ID)
 		$tweet = '';
 		
 		// Format the message
-		$tweet = tweet_updater_format_tweet( $options['newpost_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
+		$tweet = tweet_updater_format_tweet( $options['newpost_format'], $title, $link, $post_ID, $options['url_method'] );
 	
 			if($tweet != '')
 			{
@@ -71,7 +71,7 @@ function tweet_updater_edited($post) //$post_ID)
 		$tweet = '';
 
 		// Format the message
-		$tweet = tweet_updater_format_tweet( $options['edited_format'], $title, $link, $post_ID, $options['use_curl'], $options['url_method'] );
+		$tweet = tweet_updater_format_tweet( $options['edited_format'], $title, $link, $post_ID, $options['url_method'] );
 
 			if($tweet != '')
 			{
@@ -157,18 +157,18 @@ function tweet_updater_is_tweetable($post, $options)
 
 /* Single function to output a formatted tweet */
 
-function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $use_curl, $url_method )
+function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $url_method )
 {
 	//initialise tweet
 	$tweet = $tweet_format;
 	
 	//retieve the short url
-	$short_url = tu_get_shorturl($use_curl,$url_method,$link,$post_ID);
+	$short_url = tu_get_shorturl($url_method,$link,$post_ID);
 
 	// Error handling: If plugin is deacitvated, repeat to use default link supplier
 	if( $short_url['error_code'] == '1' ) 
 	{ 
-		$short_url = tu_get_shorturl($use_curl,$short_url['url_method'],$link,$post_ID); 
+		$short_url = tu_get_shorturl($short_url['url_method'],$link,$post_ID); 
 	}
 
 	// Additional error handing is possible: if $tweet is empty, sending will be aborted.
@@ -214,7 +214,7 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 		//if still too long, force a url shortener
 		if ($tweet_length > 140)
 		{
-			$short_url = tu_get_shorturl($use_curl,'tinyurl',$link,$post_ID); 
+			$short_url = tu_get_shorturl('tinyurl',$link,$post_ID); 
 		}
 	}
 	
@@ -227,7 +227,7 @@ function tweet_updater_format_tweet( $tweet_format, $title, $link, $post_ID, $us
 
 /* Get the selected short url */
 
-function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID ) 
+function tu_get_shorturl( $url_method, $link, $post_ID ) 
 {
 	//Internal URL providers:
 	if ( $url_method == 'petite' ) 
@@ -293,7 +293,7 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 			$response = tweet_updater_get_file_contents($target_url);
 		}
 		
-		$json = json_decode($response,true);
+		$json = json_decode( $response, true );
 		
 		if ( $json['statusCode'] == "200" )
 		{
@@ -313,94 +313,43 @@ function tu_get_shorturl( $use_curl, $url_method, $link, $post_ID )
 	else if ( $url_method == 'bitly' ) 
 	{
 		$options = get_option('tweet_updater_options');
-		$short_url = tu_make_bitly_url($link,$options['bitly_username'],$options['bitly_appkey'],$use_curl);
+		
+		$bitly = 'http://api.bit.ly/v3/shorten?login=' . $options['bitly_username'] . '&apiKey=' . $options['bitly_appkey'] . '&format=json&longUrl=' . urlencode($link);
+		$response = tweet_updater_get_file_contents($bitly); 
+		
+		$json = json_decode( $response, true );
+		
+		if ( $json['status_code'] == "200" )
+		{
+			$short_url = $json['data']['url'];
+		}
+		else 
+		{
+			$short_url = array( 
+				'error_code' => '1',
+				'status_code' => $json['status_code'], 
+				'status_txt' => $json['status_txt'], 
+				'url_method' => 'default',
+						);
+			//echo "bit.ly failed <br /><pre>" . print_r($short_url) . "</pre>";
+		}
 	}
 	else if ( $url_method == 'tinyurl' || $url_method == 'default' ) //set tinyurl as default shortener
 	{
 		$target_url = "http://tinyurl.com/api-create.php?url=" . $link;
-		if ( $use_curl == '1' ) 
-		{
-			$short_url = file_get_contents_curl($target_url);
-		} 
-		else 
-		{      
-			$short_url = file_get_contents($target_url);
-		}
+		$short_url = tweet_updater_get_file_contents($target_url);
 	}
 	if ( $url_method == 'stwnsh' ) 
 	{ 
 		$target_url = "http://stwnsh.com/api.php?format=simple&action=shorturl&url=" . $link;
-		if ( $use_curl == '1' ) 
-		{ 
-			$short_url = file_get_contents_curl($target_url); 
-		} 
-		else 
-		{ 
-			$short_url = file_get_contents($target_url); 
-		}
-	}
-	else if ( $url_method == 'zzgd' ) 
-	{ 
-		$target_url = "http://zz.gd/api-create.php?url=" . $link;
-		if ( $use_curl == '1' ) 
-		{ 
-			$short_url = file_get_contents_curl($target_url); 
-		} 
-		else 
-		{ 
-			$short_url = file_get_contents($target_url); 
-		}
+		$short_url = tweet_updater_get_file_contents($target_url); 
 	}
 
 	return $short_url;
 }
 
 
-/* get a bit.ly url */
-
-function tu_make_bitly_url($link,$login,$appkey,$use_curl) 
-{
-	$bitly = 'http://api.bit.ly/v3/shorten?login='.$login.'&apiKey='.$appkey.'&format=json&history=1&longUrl='.urlencode($link);
-
-	//get the url
-	if ($use_curl == '1') 
-	{ 
-		$response = file_get_contents_curl($bitly); 
-	}
-	else 
-	{ 
-		$response = file_get_contents($bitly); 
-	}
-
-	$json = @json_decode($response,true);
-	$short_url = $json['data']['url'];
-	
-	//error handling hook
-	$status = array( 'status_code' => $json['status_test'], 'status_txt' => $json['status_txt'] );
-	
-	return $short_url;
-}
-
-
-
-/* alternative funtion to file_get_contents(), using cURL */
-// CURL removed v_3.1.alpha2 changed to WP native - WP_Http - to remove server dependancies
-function file_get_contents_curl($target_url) 
-{
-	$ch = curl_init();
-	
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_URL, $target_url);
-	
-	$data = curl_exec($ch);
-
-	curl_close($ch);
-
-	return $data;
-}
-
-/* Wordress alternative to file_get_contents - server independent*/
+/* Wordress alternative to file_get_contents/CURL/Snoopy/etc. - server independent*/
 
 function tweet_updater_get_file_contents( $url, $method='GET', $body=array(), $headers=array() ) {
 	if( !class_exists( 'WP_Http' ) )

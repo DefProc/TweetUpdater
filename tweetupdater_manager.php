@@ -48,7 +48,6 @@ function tweet_updater_activate()
 		'limit_to_category' => array(),
 		'limit_to_custom_field_key' => '',
 		'limit_to_custom_field_val' => '',
-		'use_curl' => '1',
 		'url_method' => 'default',
                 'bitly_username' => '',
                 'bitly_appkey' => '',
@@ -77,6 +76,9 @@ function tweet_updater_activate()
 			$new_options[$key] = $current_options[$key];
 		}
 	}
+	
+	//zz.gd has closed, removed for version 3.1, if chosen - reset to default
+	if( $current_options['url_method'] == 'zzgd' ) { $new_options['url_method'] == 'default'; }
 	
 	update_option( 'tweet_updater_options', $new_options );
 }
@@ -231,9 +233,8 @@ function tweet_updater_options_page()
 			<?php settings_fields('tweet_updater_options'); ?>
 			<?php do_settings_sections('new_post'); ?> 
 			<?php do_settings_sections('edited_post'); ?> 
-      <?php do_settings_sections('limit_tweets'); ?>
-      <?php do_settings_sections('short_url'); ?> 
-      <fieldset><?php do_settings_sections('url_method'); ?></fieldset>
+			<?php do_settings_sections('limit_tweets'); ?>
+			<?php do_settings_sections('short_url'); ?> 
 			<p class="submit" ><input name="Submit" class="button-primary"  type="submit" value="<?php esc_attr_e('Save Options'); ?>" />
 		</form>
 	</div>
@@ -243,12 +244,14 @@ function tweet_updater_options_page()
 	/* debug code to check database values */
 	if( $options['show_debug'] == 1 )
 	{
+		echo "<fieldset>";
 		echo "<p>\$tokens: <br /><pre>";
 		print_r( $tokens );
 		echo "</pre></p>";
 		echo "<p>\$options: <br /><pre>";
 		print_r( $options );
 		echo "</pre></p>"; 
+		echo "</fieldset>";
 	}
 	/* end */
 ?>
@@ -308,11 +311,6 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 	//Section 4: Short Url service
 	add_settings_section('tweet_updater_short_url', 'Short URL Service:', 'tweet_updater_short_url', 'short_url');
 		add_settings_field('tweet_updater_chose_url', 'Use a #url# from which provider?', 'tweet_updater_chose_url1', 'short_url', 'tweet_updater_short_url');
-
-	//Section 5: Use CURL to get short_url?
-	add_settings_section('tweet_updater_url_method', 'Use cURL to get external short_urls?', 'tweet_updater_url_method', 'url_method');
-    add_settings_field('tweet_updater_use_curl', 'Use cURL for short URLs?', 'tweet_updater_use_curl', 'url_method', 'tweet_updater_url_method');
-
 }
 
 /* Return Form components for the Allowed Form Fields */
@@ -482,19 +480,10 @@ function tweet_updater_chose_url1()
 	if( $options['url_method'] == 'tinyurl' || $options['url_method'] == 'default' ) { echo " checked='true'"; };
 	echo " /><label for='tweet_updater_chose_url'>TinyURL <a href='http://tinyurl.com/'>http://tinyurl.com</a> (Default)</label></li>";	
 
-	// ZZ.GD
-	echo "<li><input id='tweet_updater_chose_url' type='radio' name='tweet_updater_options[url_method]' value='zzgd'";
-	if( $options['url_method'] == 'zzgd' ) { echo " checked='true'"; };
-	echo " /><label for='tweet_updater_chose_url'>ZZ.GD <a href='http://zz.gd/'>http://zz.gd</a></label></li>"; 
+	// ZZ.GD is now closed
 
 	echo "</ul>";
 }
-
-//Alternative short url retrieval method
-function tweet_updater_url_method()
-	{ echo "<p>Version 2.05 added the option to use php cURL to create and retrieve external short urls instead of file_get_contents(). <br />If you'd prefer to use file_get_contents() for URL retrieval, unselect this checkbox.<br />This doesn't affect Twitter communication, which only uses cURL.</p>"; }
-function tweet_updater_use_curl()
-	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_use_curl' type='checkbox' name='tweet_updater_options[use_curl]' value='1' "; if( $options['use_curl'] == '1' ) { echo " checked='true'"; }; echo " /><label>Some web hosts disable the get_page_contents() function. In this case, you must use cURL."; }
 
 
 
@@ -536,7 +525,6 @@ function tweet_updater_options_validate($input)
 	if( !empty( $input['limit_to_category'] ) ) 	{ $options['limit_to_category'] = $input['limit_to_category']; } else { $options['limit_to_category'] = array(); }
 	if( isset( $input['limit_to_custom_field_key'] ) ) { $options['limit_to_custom_field_key'] = $input['limit_to_custom_field_key']; }
 	if( isset( $input['limit_to_custom_field_val'] ) ) { $options['limit_to_custom_field_val'] = $input['limit_to_custom_field_val']; }
-	if( !empty( $input['use_curl'] ) ) 	{ $options['use_curl'] = 	$input['use_curl']; } 			else { $options['use_curl'] = '0'; }
 	if( isset( $input['url_method'] ) ) 	{ $options['url_method'] = 	$input['url_method']; }
 	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = 	$input['bitly_username']; }
 	if( isset( $input['bitly_appkey'] ) ) 	{ $options['bitly_appkey'] = 	$input['bitly_appkey']; }

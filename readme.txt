@@ -1,6 +1,6 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.1.alpha
+Version: 3.1.alpha2
 Stable tag: 3.0.1
 Tags: twitter, message, tweet, status, update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update, YOURLS, bit.ly, Stwnsh, TinyURL, ZZ.GD
 Requires at least: 3.0.1
@@ -135,10 +135,10 @@ Stable release for WP 3.0.1
 
 = 3.1 = 
 
-* Added "limit by category or custom field" (LimitCategory Branch) - From [BjornW](http://burobjorn.nl/)
-* Added tweet length checking, will trim title and auto-shorten long urls to keep tweets under 140 characters.
-* Added generic [YOURLS](http://yourls.org) shortener support - for both public and private installations. Can use timestamp-hashed secret keys (preferred) or usename/password combo (sent plaintext).
-
+* Added "limit by category or custom field" (LimitCategory Branch) - From [BjornW](http://burobjorn.nl/).
+* Added tweet length checking, will trim the title and force shortening of long urls to keep tweets under 140 characters.
+* Added generic [YOURLS](http://yourls.org) shortener support - for both public and private installations. Can use timestamp-hashed secret keys (preferred) or usename/password combo (sent in plaintext).
+* Removed CURL dependency for short URL retreval, replaced with WP_Http (CURL is still required for sending updates to Twitter).
 
 = 3.0.1 = 
 
