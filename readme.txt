@@ -1,6 +1,6 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.2.alpha
+Version: 3.1.alpha
 Stable tag: 3.0.1
 Tags: twitter, tweet, status update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update
 Requires at least: 3.0.1

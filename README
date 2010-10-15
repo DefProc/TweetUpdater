@@ -1,18 +1,24 @@
-Plugin Name: TwitterUpdater
-Description: WordPress plugin to update your Twitter status when you publish or update a post.
+TwitterUpdater
+==============
+
+WordPress plugin to update your Twitter status when you publish or update a post.
 Author: Patrick Fenner
 
-= 3.1 = 
+3.1 
+---
 
-* Add "limit by category or custom field" (LimitCategory Branch) - From [BjornW](http://burobjorn.nl/)
+* Added "limit by category or custom field" (LimitCategory Branch) - From [BjornW](http://burobjorn.nl/)
+* Added tweet length checking, will trim title and 
 
-= 3.0.1 =
+3.0.1
+-----
 
 * Rearranged URL selection to internal/external sources.
 * Added Welsh language URL shortener - From Gareth Jones, [Stwnsh](http://stwnsh.com/).
 * Added warning if Bit.ly is selected without API credentials.
 
-= 3.0 =
+3.0
+---
 
 * Changed name to *TweetUpdater*
 * Uses OAuth as the Twitter account authentication method. (Uses the TwitterAuth php library from [Abraham](http://github.com/abraham/twitteroauth))
@@ -26,7 +32,8 @@ Author: Patrick Fenner
 * Added to the [WordPress Plugins Directory](http://wordpress.org/extend/plugins/tweetupdater/).
 * Updated functions for WP 3.0.1
 
-= 2.11 =
+2.11
+----
 
 [http://www.deferredprocrastination.co.uk](http://www.deferredprocrastination.co.uk)
 
