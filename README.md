@@ -11,6 +11,7 @@ Author: Patrick Fenner
 * Added tweet length checking, will trim title and force shortening of long urls to keep tweets under 140 characters.
 * Added generic [YOURLS](http://yourls.org) shortener support - for both public and private installations. Can use timestamp-hashed secret keys (preferred) or usename/password combo (sent plaintext).
 * Removed CURL dependency for short URL retreval, replaced with WP_Http (CURL is still required for sending updates to Twitter).
+* Removed zz.gd as a shortener option (service has closed).
 
 3.0.1
 -----

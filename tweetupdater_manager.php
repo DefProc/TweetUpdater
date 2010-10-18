@@ -55,7 +55,7 @@ function tweet_updater_activate()
 		'yourls_username' => '',
 		'yourls_passwd' => '',
 		'yourls_token' => '',
-		'show_debug' => '1', //show database entries on settings page
+		//'show_debug' => '1', //show database entries on settings page - uncomment and reactivate to use
 				);
 	
 	add_option( 'tweet_updater_options', $options_default, '', 'no' );
@@ -64,7 +64,7 @@ function tweet_updater_activate()
 	$current_options = get_option('tweet_updater_options');
 	
 	// Check all options from the default array exist in the current array. If not, load the default values.
-	// (checking this way _should_ eliminate any old items that are not in the default array - but none have been removed yet.)
+	// checking this way should eliminate any old items that are not in the default array.
 	foreach( $options_default as $key => $value )
 	{
 		if( !isset($current_options[$key]) )
@@ -304,9 +304,9 @@ register_setting( 'tweet_updater_options', 'tweet_updater_options', 'tweet_updat
 	
 	// Section 3: Limit tweets to posts with certain custom field/value pair or part of a specific category
 	add_settings_section('tweet_updater_limit_tweets', 'Limit tweets:', 'tweet_updater_limit_tweets' ,'limit_tweets');
-		add_settings_field('tweet_updater_limit_activate', 'Limit tweeting using the rules below?', 'tweet_updater_limit_activate', 'limit_tweets', 'tweet_updater_limit_tweets');
-		add_settings_field('tweet_updater_limit_to_category', 'Only tweet for posts in the selected category', 'tweet_updater_limit_to_category', 'limit_tweets', 'tweet_updater_limit_tweets');
-		add_settings_field('tweet_updater_limit_to_customfield', 'Only tweet for posts with this Meta tag and value', 'tweet_updater_limit_to_customfield', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_activate', 'Limit Twitter updates using the rules below?', 'tweet_updater_limit_activate', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_to_category', 'Send tweets when a post is in a selected category:', 'tweet_updater_limit_to_category', 'limit_tweets', 'tweet_updater_limit_tweets');
+		add_settings_field('tweet_updater_limit_to_customfield', 'Send tweets for posts with this Meta [Title] OR [Title AND Value]', 'tweet_updater_limit_to_customfield', 'limit_tweets', 'tweet_updater_limit_tweets');
 
 	//Section 4: Short Url service
 	add_settings_section('tweet_updater_short_url', 'Short URL Service:', 'tweet_updater_short_url', 'short_url');
@@ -369,9 +369,9 @@ function tweet_updater_edited_update()
 function tweet_updater_edited_format()
 	{ global $tweet_updater_placeholders; $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_edited_format' type='text' size='60' maxlength='100' name='tweet_updater_options[edited_format]' value='{$options['edited_format']}' />" . $tweet_updater_placeholders; }
 
-  // Limit tweets to Categories and Custom Fields
+// Limit tweets to Categories and Custom Fields
 function tweet_updater_limit_tweets() 
-	{ echo "<p>Sending of tweets can be limited to posts of a selected category, or that have a specified Custom Field (Meta) title and/or value.</p>"; }
+	{ echo "<p>Twitter messages can be sent only when the post is a member of a [selected category], OR that have a specified Custom Field [title] OR [title AND value].</p>"; }
 function tweet_updater_limit_activate()
 	{ $options = get_option('tweet_updater_options'); echo "<input id='tweet_updater_limit_activate' type='checkbox' name='tweet_updater_options[limit_activate]' value='1'"; if( $options['limit_activate'] == '1' ) { echo " checked='true'"; }; echo " />"; }
 function tweet_updater_limit_to_category() 
@@ -379,8 +379,6 @@ function tweet_updater_limit_to_category()
 	$options = get_option('tweet_updater_options');
 	$categories=get_categories( array( 'orderby'=>'name', 'order'=>'ASC' , 'hide_empty'=>'0') );
 
-	//echo "<p><pre>" . print_r($categories, true) . "</pre></p>";
-	
 	if ( !empty($categories) )
 	{
 		echo "<ul>";
@@ -446,10 +444,10 @@ function tweet_updater_chose_url1()
 			<li><label for='tweet_updater_yourls_url'>API page address:</label><input id='tweet_updater_yourls_url' type='text' size='60' name='tweet_updater_options[yourls_url]' value='{$options['yourls_url']}' /></li>
 			<li><label>When the YOURLS API is set to 'private' include either: Signature Token or: Username & Password</label>
 			<ul style='margin-left: 3em; margin-top: 0.5em;'>
-				<li><label for='tweet_updater_yourls_token'>Signature Token (preferred): </label><input id='tweet_updater_yourls_token' type='text' size='30' name='tweet_updater_options[yourls_token]' value='{$options['yourls_token']}' /></li>
+				<li><label for='tweet_updater_yourls_token'>Signature Token: </label><input id='tweet_updater_yourls_token' type='text' size='30' name='tweet_updater_options[yourls_token]' value='{$options['yourls_token']}' /><label>(preferred)</li>
 				<li><label>or:</label></li>
 				<li><label for='tweet_updater_yourls_username'>Username: </label><input id='tweet_updater_yourls_username' type='text' size='30' name='tweet_updater_options[yourls_username]' value='{$options['yourls_username']}' /></li>
-				<li><label for='tweet_updater_yourls_passwd'>Password: </label><input id='tweet_updater_yourls_passwd' type='text' size='30' name='tweet_updater_options[yourls_passwd]' value='{$options['yourls_passwd']}' /></li>
+				<li><label for='tweet_updater_yourls_passwd'>Password: </label><input id='tweet_updater_yourls_passwd' type='text' size='30' name='tweet_updater_options[yourls_passwd]' value='{$options['yourls_passwd']}' /><label>(not recommended - password will be sent in plaintext)</label></li>
 			</ul></li>
 			</ul>";
 	echo "</li>";
@@ -480,7 +478,7 @@ function tweet_updater_chose_url1()
 	if( $options['url_method'] == 'tinyurl' || $options['url_method'] == 'default' ) { echo " checked='true'"; };
 	echo " /><label for='tweet_updater_chose_url'>TinyURL <a href='http://tinyurl.com/'>http://tinyurl.com</a> (Default)</label></li>";	
 
-	// ZZ.GD is now closed
+	// ZZ.GD is now closed - option removed
 
 	echo "</ul>";
 }

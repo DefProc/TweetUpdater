@@ -2,7 +2,7 @@
 /*
 Plugin Name: TweetUpdater
 Description: Update your Twitter status when you publish or update a post. Based on TwitterUpdater v1.0 by <a href="http://blog.victoriac.net/ja/geek/twitter-updater">Victoria Chan</a>
-Version: 3.1.alpha2
+Version: 3.1
 Author: Patrick Fenner (Def-Proc.co.uk)
 Author URI: http://www.deferredprocrastination.co.uk/
 Plugin URI: http://www.deferredprocrastination.co.uk/projects/tweetupdater
@@ -105,9 +105,9 @@ function tweet_updater_is_tweetable($post, $options)
 			
 			if( is_array($post_categories) && sizeof($post_categories) > 0 ) 
 			{
-				foreach( $options['limit_to_category'] as $key => $value )
+				foreach( $post_categories as $key => $value )
 				{
-					if( $value > 0 && in_array( $value, $post_categories ) ) 
+					if( $value > 0 && in_array( $value, $options['limit_to_category'] ) ) 
 					{
 						//echo "in cat: TRUE";
 						return true;
@@ -331,7 +331,6 @@ function tu_get_shorturl( $url_method, $link, $post_ID )
 				'status_txt' => $json['status_txt'], 
 				'url_method' => 'default',
 						);
-			//echo "bit.ly failed <br /><pre>" . print_r($short_url) . "</pre>";
 		}
 	}
 	else if ( $url_method == 'tinyurl' || $url_method == 'default' ) //set tinyurl as default shortener
