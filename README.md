@@ -4,6 +4,11 @@ TwitterUpdater
 WordPress plugin to update your Twitter status when you publish or update a post.
 Author: Patrick Fenner
 
+3.1.1
+-----
+
+* Bugfix for Twitter account reset process. Bug report from Fabiano Conserva.
+
 3.1 
 ---
 

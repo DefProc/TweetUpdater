@@ -55,7 +55,7 @@ function tweet_updater_activate()
 		'yourls_username' => '',
 		'yourls_passwd' => '',
 		'yourls_token' => '',
-		//'show_debug' => '1', //show database entries on settings page - uncomment and reactivate to use
+		//'show_debug' => '1', //show database entries on settings page - uncomment and reactivate plugin to use
 				);
 	
 	add_option( 'tweet_updater_options', $options_default, '', 'no' );
@@ -496,15 +496,15 @@ function tweet_updater_auth_validate($input) //n.b. else statements required for
 	// To retain all the fields, the use the changed items to update the original array.
 	if( !empty( $input['consumer_key'] ) ) 		{ $tokens['consumer_key'] = 	$input['consumer_key']; }
 	if( !empty( $input['consumer_secret'] ) ) 	{ $tokens['consumer_secret'] = 	$input['consumer_secret']; }
-	if( !empty( $input['default_consumer_keys'] ) ) { $tokens['default_consumer_keys'] = $input['default_consumer_keys']; } else { $tokens['default_consumer_keys'] = '0'; }
-	if( !empty( $input['request_key'] ) ) 		{ $tokens['request_key'] = 	$input['request_key']; }
-	if( !empty( $input['request_secret'] ) ) 	{ $tokens['request_secret'] = 	$input['request_secret']; }
-	if( !empty( $input['request_link'] ) ) 		{ $tokens['request_link'] = 	$input['request_link']; }
-	if( !empty( $input['access_key'] ) ) 		{ $tokens['access_key'] = 	$input['access_key']; }
-	if( !empty( $input['access_secret'] ) ) 	{ $tokens['access_secret'] = 	$input['access_secret']; }
-	if( !empty( $input['auth1_flag'] ) ) 		{ $tokens['auth1_flag'] = 	$input['auth1_flag']; }
-	if( !empty( $input['auth2_flag'] ) ) 		{ $tokens['auth2_flag'] = 	$input['auth2_flag']; }
-	if( !empty( $input['auth3_flag'] ) ) 		{ $tokens['auth3_flag'] = 	$input['auth3_flag']; }
+	if( isset( $input['default_consumer_keys'] ) ) { $tokens['default_consumer_keys'] = $input['default_consumer_keys']; } // else { $tokens['default_consumer_keys'] = '0'; }
+	if( isset( $input['request_key'] ) ) 		{ $tokens['request_key'] = 	$input['request_key']; }
+	if( isset( $input['request_secret'] ) ) 	{ $tokens['request_secret'] = 	$input['request_secret']; }
+	if( isset( $input['request_link'] ) ) 		{ $tokens['request_link'] = 	$input['request_link']; }
+	if( isset( $input['access_key'] ) ) 		{ $tokens['access_key'] = 	$input['access_key']; }
+	if( isset( $input['access_secret'] ) ) 		{ $tokens['access_secret'] = 	$input['access_secret']; }
+	if( isset( $input['auth1_flag'] ) ) 		{ $tokens['auth1_flag'] = 	$input['auth1_flag']; }
+	if( isset( $input['auth2_flag'] ) ) 		{ $tokens['auth2_flag'] = 	$input['auth2_flag']; }
+	if( isset( $input['auth3_flag'] ) ) 		{ $tokens['auth3_flag'] = 	$input['auth3_flag']; }
 	
 	return $tokens;
 }
@@ -518,18 +518,18 @@ function tweet_updater_options_validate($input)
 	if( !empty( $input['newpost_update'] ) ) 	{ $options['newpost_update'] = 	$input['newpost_update']; } 	else { $options['newpost_update'] = '0'; }
 	if( isset( $input['newpost_format'] ) ) 	{ $options['newpost_format'] = 	$input['newpost_format']; }
 	if( !empty( $input['edited_update'] ) ) 	{ $options['edited_update'] = 	$input['edited_update']; } 	else { $options['edited_update'] = '0'; }
-	if( isset( $input['edited_format'] ) ) 	{ $options['edited_format'] = 	$input['edited_format']; }
+	if( isset( $input['edited_format'] ) ) 		{ $options['edited_format'] = 	$input['edited_format']; }
 	if( !empty( $input['limit_activate'] ) ) 	{ $options['limit_activate'] = 	$input['limit_activate']; }  	else { $options['limit_activate'] = '0'; }
 	if( !empty( $input['limit_to_category'] ) ) 	{ $options['limit_to_category'] = $input['limit_to_category']; } else { $options['limit_to_category'] = array(); }
 	if( isset( $input['limit_to_custom_field_key'] ) ) { $options['limit_to_custom_field_key'] = $input['limit_to_custom_field_key']; }
 	if( isset( $input['limit_to_custom_field_val'] ) ) { $options['limit_to_custom_field_val'] = $input['limit_to_custom_field_val']; }
-	if( isset( $input['url_method'] ) ) 	{ $options['url_method'] = 	$input['url_method']; }
-	if( isset( $input['bitly_username'] ) ) { $options['bitly_username'] = 	$input['bitly_username']; }
-	if( isset( $input['bitly_appkey'] ) ) 	{ $options['bitly_appkey'] = 	$input['bitly_appkey']; }
-	if( !empty( $input['yourls_url'] ) ) 	{ $options['yourls_url'] = 	$input['yourls_url']; }			else { $options['yourls_url'] = 'http://'; }
-	if( isset( $input['yourls_username'] ) ) { $options['yourls_username'] = $input['yourls_username']; }
-	if( isset( $input['yourls_passwd'] ) ) 	{ $options['yourls_passwd'] = 	$input['yourls_passwd']; }
-	if( isset( $input['yourls_token'] ) ) 	{ $options['yourls_token'] = 	$input['yourls_token']; }
+	if( isset( $input['url_method'] ) ) 		{ $options['url_method'] = 	$input['url_method']; }
+	if( isset( $input['bitly_username'] ) ) 	{ $options['bitly_username'] = 	$input['bitly_username']; }
+	if( isset( $input['bitly_appkey'] ) ) 		{ $options['bitly_appkey'] = 	$input['bitly_appkey']; }
+	if( !empty( $input['yourls_url'] ) ) 		{ $options['yourls_url'] = 	$input['yourls_url']; }		else { $options['yourls_url'] = 'http://'; }
+	if( isset( $input['yourls_username'] ) ) 	{ $options['yourls_username'] = $input['yourls_username']; }
+	if( isset( $input['yourls_passwd'] ) ) 		{ $options['yourls_passwd'] = 	$input['yourls_passwd']; }
+	if( isset( $input['yourls_token'] ) ) 		{ $options['yourls_token'] = 	$input['yourls_token']; }
 	
 	return $options;
 }

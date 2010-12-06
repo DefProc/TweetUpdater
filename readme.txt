@@ -1,10 +1,10 @@
 === TweetUpdater ===
 Contributors: DefProc
-Version: 3.1
-Stable tag: 3.1
+Version: 3.1.1
+Stable tag: 3.1.1
 Tags: twitter, message, tweet, status, update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update, YOURLS, bit.ly, Stwnsh, TinyURL, ZZ.GD
-Requires at least: 3.0.1
-Tested up to: 3.0.1
+Requires at least: 3.0
+Tested up to: 3.0.2
 
 Send messages to Twitter when a post is published or updated; uses OAuth. Will add a short URL from a plugin, or from an external service.
 
@@ -114,9 +114,13 @@ haven't tried it.
 
 == Upgrade Notice ==
 
+= 3.1.1 = 
+
+Bug fix for Twitter reset process.
+
 = 3.1 = 
 
-Added option to limit twitter message sending to selected categories or custom field/value
+Added option to limit twitter message sending to selected categories or custom field/value.
 
 Added tweet length checking, will trim title and auto-shorten long urls to keep tweets under 140 characters.
 
