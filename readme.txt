@@ -4,7 +4,7 @@ Version: 3.1.1
 Stable tag: 3.1.1
 Tags: twitter, message, tweet, status, update, OAuth, shorturl, short_url, shortlink, short url, la petite url, publish, update, YOURLS, bit.ly, Stwnsh, TinyURL, ZZ.GD
 Requires at least: 3.0
-Tested up to: 3.1.3
+Tested up to: 3.2
 
 Send messages to Twitter when a post is published or updated; uses OAuth. Will add a short URL from a plugin, or from an external service.
 
